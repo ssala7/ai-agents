@@ -1,0 +1,29 @@
+{
+  "_comment": "Pattern: Fan-out/Fan-in — parallel work feeds into a single summary",
+  "_usage": "Ask Kiro: 'Audit the authentication module for security and performance'",
+  "task": "Audit the authentication module",
+  "mode": "blocking",
+  "stages": [
+    {
+      "name": "security-scan",
+      "role": "kiro_default",
+      "prompt_template": "Scan for security vulnerabilities in {task}"
+    },
+    {
+      "name": "perf-analysis",
+      "role": "kiro_default",
+      "prompt_template": "Analyze performance bottlenecks in {task}"
+    },
+    {
+      "name": "code-quality",
+      "role": "kiro_default",
+      "prompt_template": "Check code quality and maintainability of {task}"
+    },
+    {
+      "name": "final-report",
+      "role": "kiro_default",
+      "prompt_template": "Compile all findings into a prioritized report for {task}",
+      "depends_on": ["security-scan", "perf-analysis", "code-quality"]
+    }
+  ]
+}

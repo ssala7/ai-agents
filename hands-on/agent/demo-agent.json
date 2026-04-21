@@ -1,0 +1,14 @@
+{
+  "name": "demo-agent",
+  "description": "Demo agent with custom MCP tools for learning",
+  "prompt": "You are a helpful assistant with access to custom tools. Use get_system_info to check system status and word_count to analyze text. Always demonstrate tool usage when relevant.",
+  "tools": ["fs_read", "fs_write", "execute_bash", "grep"],
+  "allowedTools": ["fs_read", "grep", "@demo-tools"],
+  "mcpServers": {
+    "demo-tools": {
+      "command": "python3",
+      "args": ["./kiro-concepts-demo/hands-on/mcp-server/server.py"]
+    }
+  },
+  "welcomeMessage": "Demo agent ready! Try: 'What system am I on?' or 'Count words in: hello world this is a test'"
+}

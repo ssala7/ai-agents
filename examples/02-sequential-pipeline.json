@@ -1,0 +1,25 @@
+{
+  "_comment": "Pattern: Sequential — each stage waits for the previous one",
+  "_usage": "Ask Kiro: 'Add a /health endpoint to my Express app'",
+  "task": "Add a health check endpoint to the Express.js API",
+  "mode": "blocking",
+  "stages": [
+    {
+      "name": "research",
+      "role": "kiro_default",
+      "prompt_template": "Research best practices and gather requirements for {task}"
+    },
+    {
+      "name": "implement",
+      "role": "kiro_default",
+      "prompt_template": "Implement the solution for {task}",
+      "depends_on": ["research"]
+    },
+    {
+      "name": "review",
+      "role": "kiro_default",
+      "prompt_template": "Review the implementation of {task} for bugs and improvements",
+      "depends_on": ["implement"]
+    }
+  ]
+}

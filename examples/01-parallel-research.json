@@ -1,0 +1,23 @@
+{
+  "_comment": "Pattern: All stages run in parallel (no dependencies)",
+  "_usage": "Ask Kiro: 'Compare Redis vs Memcached vs DragonflyDB for caching'",
+  "task": "Compare caching solutions for our web application",
+  "mode": "blocking",
+  "stages": [
+    {
+      "name": "redis-research",
+      "role": "kiro_default",
+      "prompt_template": "Research Redis pros, cons, and use cases for {task}"
+    },
+    {
+      "name": "memcached-research",
+      "role": "kiro_default",
+      "prompt_template": "Research Memcached pros, cons, and use cases for {task}"
+    },
+    {
+      "name": "dragonfly-research",
+      "role": "kiro_default",
+      "prompt_template": "Research DragonflyDB pros, cons, and use cases for {task}"
+    }
+  ]
+}
