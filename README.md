@@ -201,6 +201,69 @@ See `cheatsheets/session-commands.md` for the full reference.
 
 ---
 
+## 5. Kiro Slash Commands — Quick Reference
+
+Kiro has a rich set of `/` commands you can type directly in the chat. Here are the most useful ones:
+
+### Session & Conversation
+| Command | What it does |
+|---------|-------------|
+| `/chat save <name>` | Save current conversation to a file |
+| `/chat load <name>` | Load a previously saved conversation |
+| `/chat new` | Start a fresh conversation |
+| `/clear` | Clear conversation history |
+| `/compact` | Summarize old turns to free up context space |
+| `/transcript` | View full conversation in your pager |
+
+### Agents & Models
+| Command | What it does |
+|---------|-------------|
+| `/agent` | List all agents |
+| `/agent <name>` | Switch to a specific agent |
+| `/agent create <name>` | Create a new agent |
+| `/plan <idea>` | Switch to planner agent with a task |
+| `/guide <question>` | Ask the guide agent about Kiro itself |
+| `/model` | List models or switch to a different one |
+
+### Context & Knowledge
+| Command | What it does |
+|---------|-------------|
+| `/context add <path>` | Add files to the agent's context |
+| `/context clear` | Remove all context files |
+| `/knowledge add <name> <path>` | Index files for persistent semantic search |
+| `/knowledge show` | List all knowledge base entries |
+
+### Tools & MCP
+| Command | What it does |
+|---------|-------------|
+| `/tools` | Show available tools and trust status |
+| `/tools trust-all` | Auto-approve all tools (no more prompts) |
+| `/tools trust <name>` | Trust a specific tool |
+| `/mcp` | Show connected MCP servers |
+| `/hooks` | View configured lifecycle hooks |
+
+### Productivity
+| Command | What it does |
+|---------|-------------|
+| `/spawn <task>` | Run a task in a background agent session |
+| `/editor` | Open `$EDITOR` to write a multi-line prompt |
+| `/paste` | Paste an image from clipboard |
+| `/copy` | Copy last response to clipboard |
+| `/code overview` | Get a high-level codebase structure |
+
+### Keyboard Shortcuts
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+G` | Crew monitor — see all active sessions |
+| `Ctrl+X` | Activity tray — task progress + message queue |
+| `Ctrl+R` | Search command history |
+| `Ctrl+O` | Toggle tool output visibility |
+| `Esc` | Dismiss overlay panels |
+
+> Full reference: `cheatsheets/kiro-commands.md`
+
+---
+
 ## Try It Yourself
 
 ### 1. Spawn a parallel session
@@ -241,7 +304,8 @@ kiro-concepts-demo/
 │   └── agent/
 │       └── demo-agent.json           ← Agent config wired to custom tool
 └── cheatsheets/
-    └── session-commands.md            ← Quick reference for all commands
+    ├── session-commands.md            ← Session management + slash commands reference
+    └── kiro-commands.md               ← Full Kiro slash commands deep-dive
 ```
 
 ## Recommended Reading Order
@@ -251,5 +315,6 @@ kiro-concepts-demo/
 3. `diagrams/end-to-end-flow.md` — See how everything connects
 4. `diagrams/dag-examples.md` — Visual DAG patterns
 5. `examples/` — Real pipeline configs
-6. `cheatsheets/session-commands.md` — Quick reference
-7. **`hands-on/WALKTHROUGH.md`** — 🔥 Build a custom tool, wire it in, deploy to AWS
+6. `cheatsheets/session-commands.md` — Session management quick reference
+7. `cheatsheets/kiro-commands.md` — Full slash commands deep-dive
+8. **`hands-on/WALKTHROUGH.md`** — 🔥 Build a custom tool, wire it in, deploy to AWS
