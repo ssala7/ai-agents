@@ -394,6 +394,123 @@ aws iam delete-role --role-name agentcore-execution-role
 
 ---
 
+## Invocation Patterns
+
+Once your agent is deployed (or even locally), there are three ways to run it depending on your use case.
+
+### 1. Local CLI (Interactive)
+
+Chat with the agent directly from your terminal:
+
+```python
+# cli.py
+from my_agent import agent
+
+while True:
+    prompt = input("You: ").strip()
+    if prompt in ("exit", "quit"):
+        break
+    response = agent(prompt)
+    print("Agent:", response.message["content"][0]["text"])
+```
+
+```bash
+python cli.py
+# You: What is the weather in Bangalore?
+# Agent: The weather in Bangalore is 28°C and Partly cloudy.
+```
+
+> The `BedrockAgentCoreApp` wrapper is only needed for cloud deployment. The `agent` object works standalone.
+
+---
+
+### 2. Autonomous Runs (Batch / Scheduled)
+
+Agent runs a fixed set of tasks with no human input. Good for cron jobs and pipelines:
+
+```python
+# autonomous.py
+from my_agent import agent
+
+TASKS = [
+    "Get weather for London and Bangalore",
+    "Calculate 999 * 42",
+    "What is the current UTC time?",
+]
+
+for task in TASKS:
+    print(f"\n>> {task}")
+    response = agent(task)
+    print(response.message["content"][0]["text"])
+```
+
+Schedule it with cron:
+```bash
+# crontab -e
+*/30 * * * * python /path/to/autonomous.py >> /var/log/agent.log 2>&1
+```
+
+---
+
+### 3. Event-Driven Loop (Reacts to External Triggers)
+
+Agent polls for events and reacts. Swap the queue source for SQS, webhooks, file watchers, etc.:
+
+```python
+# event_loop.py
+import time, json
+from queue import Queue
+from my_agent import agent
+
+event_queue = Queue()
+
+def handle_event(event):
+    if event["type"] == "weather_check":
+        prompt = f"Get weather for {event['city']}"
+    elif event["type"] == "calculation":
+        prompt = f"Calculate {event['expr']}"
+    else:
+        prompt = "What is the current time?"
+
+    response = agent(prompt)
+    print(f"[{event['type']}]", response.message["content"][0]["text"])
+
+print("Listening for events...")
+while True:
+    if not event_queue.empty():
+        handle_event(event_queue.get())
+    else:
+        time.sleep(1)
+```
+
+**Using AWS SQS as the event source:**
+```python
+import boto3, json
+
+sqs = boto3.client("sqs")
+QUEUE_URL = "<your-queue-url>"
+
+while True:
+    msgs = sqs.receive_message(QueueUrl=QUEUE_URL, WaitTimeSeconds=10)
+    for msg in msgs.get("Messages", []):
+        handle_event(json.loads(msg["Body"]))
+        sqs.delete_message(QueueUrl=QUEUE_URL, ReceiptHandle=msg["ReceiptHandle"])
+```
+
+---
+
+### Pattern Summary
+
+| Pattern | Use when | Entry point |
+|---------|----------|-------------|
+| Local CLI | Interactive chat / development | `cli.py` |
+| Autonomous | Cron jobs, batch tasks, pipelines | `autonomous.py` |
+| Event-driven loop | React to SQS, webhooks, file changes | `event_loop.py` |
+
+All three reuse the same `agent` object from `my_agent.py` — no changes to core agent code needed.
+
+---
+
 ## What's Next
 
 Once your agent is live, you can extend it with other AgentCore services:
