@@ -308,6 +308,37 @@ kiro-concepts-demo/
     └── kiro-commands.md               ← Full Kiro slash commands deep-dive
 ```
 
+---
+
+## 6. Deploy an Agent to AWS — AgentCore
+
+`agentcore-deploy/` contains everything you need to go from zero to a live agent endpoint on AWS Bedrock AgentCore Runtime.
+
+```
+agentcore-deploy/
+├── my_agent.py              ← Agent code (Strands Agents + 3 tools)
+├── requirements.txt         ← Python dependencies
+├── scripts/
+│   ├── 01_configure.sh      ← One-time setup (venv + IAM role + ECR repo)
+│   ├── 02_launch_local.sh   ← Run + test locally in Docker
+│   └── 03_deploy_cloud.sh   ← Build image, push to ECR, create endpoint
+├── iam/
+│   └── execution-role-policy.json  ← IAM permissions for the execution role
+└── docs/
+    └── DEPLOYMENT_GUIDE.md  ← Full step-by-step guide
+```
+
+**The 3-command deploy flow:**
+```bash
+./scripts/01_configure.sh    # setup (run once)
+./scripts/02_launch_local.sh # test locally
+./scripts/03_deploy_cloud.sh # deploy to AWS
+```
+
+Full guide: [`agentcore-deploy/docs/DEPLOYMENT_GUIDE.md`](agentcore-deploy/docs/DEPLOYMENT_GUIDE.md)
+
+---
+
 ## Recommended Reading Order
 
 1. `guides/agent-configuration.md` — Understand what an agent IS
@@ -318,3 +349,4 @@ kiro-concepts-demo/
 6. `cheatsheets/session-commands.md` — Session management quick reference
 7. `cheatsheets/kiro-commands.md` — Full slash commands deep-dive
 8. **`hands-on/WALKTHROUGH.md`** — 🔥 Build a custom tool, wire it in, deploy to AWS
+9. **`agentcore-deploy/docs/DEPLOYMENT_GUIDE.md`** — 🚀 Deploy a real agent to AWS AgentCore
