@@ -214,9 +214,11 @@ aws lambda create-function \
 
 aws lambda create-function-url-config \
   --function-name mcp-demo-tools \
-  --auth-type AWS_IAM \
+  --auth-type NONE \
   --region us-east-1
 ```
+
+> **Note:** This uses `--auth-type NONE` for simplicity. For production, use `AWS_IAM` auth with SigV4 signing.
 
 ### Step 3: Update agent to use remote server
 
@@ -224,8 +226,7 @@ aws lambda create-function-url-config \
 {
   "mcpServers": {
     "demo-tools": {
-      "url": "https://<your-lambda-url>.lambda-url.us-east-1.on.aws/",
-      "headers": {"Authorization": "Bearer $AWS_SESSION_TOKEN"}
+      "url": "https://<your-lambda-url>.lambda-url.us-east-1.on.aws/"
     }
   }
 }

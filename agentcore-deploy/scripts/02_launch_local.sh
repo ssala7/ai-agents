@@ -32,6 +32,9 @@ echo ""
 agentcore launch --local &
 LAUNCH_PID=$!
 
+# Clean up background process on exit/error
+trap "kill $LAUNCH_PID 2>/dev/null" EXIT
+
 # Give it time to start
 echo "     Waiting 10s for local server to be ready..."
 sleep 10

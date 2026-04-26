@@ -29,16 +29,16 @@ That's it. Name, description, prompt. Everything else is optional.
   "name": "coder",
   "description": "Can read and write code",
   "prompt": "You are a coding assistant.",
-  "tools": ["fs_read", "fs_write", "execute_bash", "grep", "glob", "code"]
+  "tools": ["read", "write", "shell", "grep", "glob", "code"]
 }
 ```
 
 Common tools:
 | Tool | What it does |
 |------|-------------|
-| `fs_read` | Read files |
-| `fs_write` | Write/edit files |
-| `execute_bash` | Run shell commands |
+| `read` | Read files |
+| `write` | Write/edit files |
+| `shell` | Run shell commands |
 | `grep` | Search text in files |
 | `glob` | Find files by pattern |
 | `code` | Code intelligence (AST search, symbols) |
@@ -54,8 +54,8 @@ Common tools:
 {
   "name": "coder",
   "prompt": "You are a coding assistant.",
-  "tools": ["fs_read", "fs_write", "execute_bash", "grep"],
-  "allowedTools": ["fs_read", "grep", "glob"]
+  "tools": ["read", "write", "shell", "grep"],
+  "allowedTools": ["read", "grep", "glob"]
 }
 ```
 
@@ -64,7 +64,7 @@ Common tools:
 Supports wildcards:
 ```json
 "allowedTools": [
-  "fs_*",           // all file tools
+  "read",              // read-only file access
   "@git/git_status", // specific MCP tool
   "@fetch"           // all tools from fetch server
 ]
@@ -76,13 +76,13 @@ Supports wildcards:
 {
   "name": "safe-coder",
   "prompt": "You are a careful coding assistant.",
-  "tools": ["fs_read", "fs_write", "execute_bash"],
+  "tools": ["read", "write", "shell"],
   "toolsSettings": {
-    "fs_write": {
+    "write": {
       "allowedPaths": ["src/**", "tests/**"],
       "deniedPaths": ["node_modules/**", ".env"]
     },
-    "execute_bash": {
+    "shell": {
       "allowedCommands": ["npm test", "npm run build"],
       "autoAllowReadonly": true
     }
@@ -98,7 +98,7 @@ This agent can ONLY write to `src/` and `tests/`, and can ONLY run `npm test` an
 {
   "name": "project-helper",
   "prompt": "You help with this specific project.",
-  "tools": ["fs_read", "fs_write", "code"],
+  "tools": ["read", "write", "code"],
   "resources": [
     "file://README.md",
     "file://src/**/*.ts",
@@ -118,16 +118,16 @@ This agent can ONLY write to `src/` and `tests/`, and can ONLY run `npm test` an
 {
   "name": "guarded-coder",
   "prompt": "You are a careful developer.",
-  "tools": ["fs_read", "fs_write", "execute_bash"],
+  "tools": ["read", "write", "shell"],
   "hooks": {
     "agentSpawn": [
       { "command": "git status" }
     ],
     "preToolUse": [
-      { "matcher": "fs_write", "command": "echo 'Writing file...'" }
+      { "matcher": "write", "command": "echo 'Writing file...'" }
     ],
     "postToolUse": [
-      { "matcher": "execute_bash", "command": "echo 'Command ran'" }
+      { "matcher": "shell", "command": "echo 'Command ran'" }
     ],
     "stop": [
       { "command": "npm run lint" }
@@ -151,7 +151,7 @@ stop              → agent finishes responding
 {
   "name": "full-stack",
   "prompt": "Full-stack dev with git and GitHub.",
-  "tools": ["fs_read", "fs_write", "execute_bash"],
+  "tools": ["read", "write", "shell"],
   "mcpServers": {
     "git": {
       "command": "mcp-server-git",
@@ -199,14 +199,14 @@ Press `Ctrl+Shift+R` to instantly switch to this agent. Press again to switch ba
   "description": "Rust development agent with full toolset",
   "prompt": "You are an expert Rust developer. Focus on safety, performance, and idiomatic code.",
   "model": "<model-id>",
-  "tools": ["fs_read", "fs_write", "execute_bash", "grep", "glob", "code"],
-  "allowedTools": ["fs_read", "grep", "glob"],
+  "tools": ["read", "write", "shell", "grep", "glob", "code"],
+  "allowedTools": ["read", "grep", "glob"],
   "toolsSettings": {
-    "fs_write": {
+    "write": {
       "allowedPaths": ["src/**", "tests/**"],
       "deniedPaths": ["target/**"]
     },
-    "execute_bash": {
+    "shell": {
       "allowedCommands": ["cargo check", "cargo test", "cargo build"],
       "autoAllowReadonly": true
     }

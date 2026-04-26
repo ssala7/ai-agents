@@ -10,13 +10,13 @@ A **chatbot** can only talk. An **agent** can talk AND do things.
 
 ```
 Chatbot:
-  You: "Delete the temp files"
-  Bot: "To delete temp files, run: rm -rf /tmp/*"   ← gives instructions
+  You: "Summarize my README file"
+  Bot: "I can't read files. Try opening it in your editor."   ← gives instructions
 
 Agent:
-  You: "Delete the temp files"
-  Agent: [executes: rm -rf /tmp/*]                   ← actually does it
-  Agent: "Done. Deleted 23 temp files."
+  You: "Summarize my README file"
+  Agent: [reads: README.md]                                    ← actually does it
+  Agent: "Your README has 3 sections: setup, usage, and API docs."
 ```
 
 ## 1.2 The Three Parts of an Agent
@@ -64,7 +64,7 @@ Kiro is an agent because it has all three parts:
 
 ```
 Brain:   Claude (or other model via Bedrock)
-Tools:   fs_read, fs_write, shell, grep, glob, code, use_aws, web_search...
+Tools:   read, write, shell, grep, glob, code, use_aws, web_search...
 Memory:  Conversation context + Knowledge base
 ```
 
@@ -166,7 +166,7 @@ For Kiro, identify what plays each role:
 | Part | What is it in Kiro |
 |------|-------------------|
 | Brain | Claude (LLM model, can be swapped via Bedrock) |
-| Tools | fs_read, fs_write, shell, grep, glob, code, use_aws, knowledge, web_search, subagent, etc. |
+| Tools | read, write, shell, grep, glob, code, use_aws, knowledge, web_search, subagent, etc. |
 | Memory | Context window (short-term, this session) + Knowledge base (long-term, across sessions) |
 
 </details>
@@ -183,7 +183,7 @@ Find all Python files in this directory, count them, and tell me which one is th
 
 Watch what happens:
 1. It calls `glob` to find .py files
-2. It calls `fs_read` or `shell` to check sizes
+2. It calls `read` or `shell` to check sizes
 3. It reasons about the results
 4. It gives you a final answer
 

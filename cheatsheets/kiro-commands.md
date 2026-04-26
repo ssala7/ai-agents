@@ -238,12 +238,12 @@ View all available tools and manage trust settings (which tools can run without 
 
 **When to use:**
 - `/tools trust-all` — when you're in a flow and don't want interruptions (e.g., running a long refactor)
-- `/tools trust fs_read` — trust read-only tools but keep write/execute prompts
+- `/tools trust read` — trust read-only tools but keep write/execute prompts
 - `/tools reset` — restore safety prompts after a session
 
 **Example:**
 ```
-/tools trust fs_read
+/tools trust read
 /tools trust grep
 /tools trust glob
 # Now reads are automatic, but writes and bash still ask

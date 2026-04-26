@@ -1,6 +1,4 @@
 {
-  "_comment": "IAM policy for the AgentCore Runtime execution role. Attach this to the role auto-created by `agentcore configure` (named agentcore-execution-role or similar). Adjust Resource ARNs to your account/region.",
-
   "Version": "2012-10-17",
   "Statement": [
     {

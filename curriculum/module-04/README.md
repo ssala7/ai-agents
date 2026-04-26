@@ -11,7 +11,7 @@ This is the most misunderstood part. The AI doesn't have if-else logic or a deci
 ```
 NOT how it works:
   if "read file" in user_input:
-      call fs_read()
+      call read()
   elif "search" in user_input:
       call grep()
 
@@ -31,7 +31,7 @@ When you type "count words in my readme", the model's input looks like:
 │                                                          │
 │ AVAILABLE TOOLS:                                         │
 │ ┌──────────────────────────────────────────────────────┐ │
-│ │ fs_read: Read files. Params: path, mode              │ │
+│ │ read: Read files. Params: path, mode              │ │
 │ │ grep: Search text in files. Params: pattern, path    │ │
 │ │ shell: Execute bash commands. Params: command         │ │
 │ │ glob: Find files by pattern. Params: pattern          │ │
@@ -54,18 +54,18 @@ It's probabilistic pattern matching, not rule-based:
 ```
 Your words:        Tool descriptions:                  Match strength:
 ─────────────      ──────────────────                  ───────────────
-"count words"  →   fs_read: "Read files"               Weak
+"count words"  →   read: "Read files"               Weak
 "count words"  →   grep: "Search text in files"        Weak
 "count words"  →   shell: "Execute bash commands"      Medium (wc -w)
 "count words"  →   word_count: "Count words/lines"     Strong ✓
-"in my readme" →   fs_read: "Read files"               Strong ✓
+"in my readme" →   read: "Read files"               Strong ✓
 
-Model decides: first fs_read("README.md"), then word_count(result)
+Model decides: first read("README.md"), then word_count(result)
                OR: shell("wc -w README.md")
 ```
 
 The model was trained on millions of examples where humans used tools. It learned patterns like:
-- "read a file" → fs_read
+- "read a file" → read
 - "search for text" → grep
 - "run a command" → shell
 - "count words" → wc or word_count
@@ -97,7 +97,7 @@ How many lines are in my README?
 Count the lines in README.md
 ```
 
-Both should trigger a tool call, but the model might pick different tools (shell with `wc -l`, or fs_read then count, or grep with `-c`). The model is probabilistic — it picks the most likely tool based on pattern matching, not a fixed rule. Run both and compare.
+Both should trigger a tool call, but the model might pick different tools (shell with `wc -l`, or read then count, or grep with `-c`). The model is probabilistic — it picks the most likely tool based on pattern matching, not a fixed rule. Run both and compare.
 
 Then try this — a request where no tool is needed:
 
@@ -119,7 +119,7 @@ Model generates (plain text response):
 
 Model generates (tool call):
   {
-    "tool": "fs_read",                   ← which tool
+    "tool": "read",                   ← which tool
     "params": {                          ← with what parameters
       "path": "README.md",
       "mode": "Line"
@@ -161,7 +161,7 @@ Since it's probabilistic, the model sometimes:
 | Problem | Example | Why |
 |---------|---------|-----|
 | Wrong tool | Uses `grep` when `glob` is better | Descriptions overlap |
-| Wrong params | `fs_read("readme.txt")` when file is `README.md` | Guessing the filename |
+| Wrong params | `read("readme.txt")` when file is `README.md` | Guessing the filename |
 | Skips tool call | "Your readme probably has ~200 words" | Answers from training data instead of checking |
 | Too many calls | Reads every file one by one | Doesn't think of a more efficient approach |
 | Hallucinated tool | Tries to call `count_words` (doesn't exist) | Confused by similar names |
@@ -204,10 +204,10 @@ For each request, predict which tool the model would pick and why:
 <details>
 <summary>Answer</summary>
 
-1. `fs_read(".env")` — "what's in" = read the file
+1. `read(".env")` — "what's in" = read the file
 2. `glob("**/*.ts")` then count — or `shell("find . -name '*.ts' | wc -l")`
-3. `fs_read` or `grep` to read code, then **model reasons** about it — no "memory leak detector" tool
-4. `execute_bash` — but model might ask for clarification (what command? what environment?)
+3. `read` or `grep` to read code, then **model reasons** about it — no "memory leak detector" tool
+4. `shell` — but model might ask for clarification (what command? what environment?)
 5. `knowledge.search` if enabled, otherwise model says "I don't have access to previous sessions"
 
 Key insight: #3 shows the model does MORE than just pick tools. It reads code and **reasons** about it. The intelligence is in the model, not the tools.
@@ -253,7 +253,7 @@ Find all files larger than 100KB in the current directory and list them sorted b
 Watch and note:
 1. Which tools were called in which order?
 2. Did the model use one tool call or multiple?
-3. Did it use `shell` (one command) or `glob` + `fs_read` (multiple tools)?
+3. Did it use `shell` (one command) or `glob` + `read` (multiple tools)?
 4. Could it have done it differently?
 
 ---

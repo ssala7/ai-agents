@@ -1,6 +1,8 @@
 # Hands-On: Build a Custom Tool & Deploy to AWS
 
-This is a practical walkthrough. No theory — just do it and see it work.
+This is the practical companion to [Module 8: Build Your Own](../curriculum/module-08/README.md). Module 8 provides the structured lab with checkpoints. This walkthrough covers the same material as a standalone quick-start guide with additional AWS deployment steps.
+
+No theory — just do it and see it work.
 
 ---
 
@@ -204,9 +206,11 @@ aws lambda create-function \
 # Add a function URL for HTTP access
 aws lambda create-function-url-config \
   --function-name mcp-demo-tools \
-  --auth-type AWS_IAM \
+  --auth-type NONE \
   --region us-east-1
 ```
+
+> **Note:** This uses `--auth-type NONE` for simplicity in this tutorial. For production, use `AWS_IAM` auth type with SigV4 request signing. See the [Lambda Function URL docs](https://docs.aws.amazon.com/lambda/latest/dg/urls-auth.html) for details.
 
 ### Step 3: Point Kiro Agent at Remote MCP Server
 
@@ -217,13 +221,10 @@ Update your agent config to use the remote server:
   "name": "demo-agent-aws",
   "description": "Demo agent with AWS-hosted MCP tools",
   "prompt": "You are a helpful assistant with custom tools hosted on AWS.",
-  "tools": ["fs_read", "execute_bash"],
+  "tools": ["read", "shell"],
   "mcpServers": {
     "demo-tools": {
-      "url": "https://<your-lambda-url>.lambda-url.us-east-1.on.aws/",
-      "headers": {
-        "Authorization": "Bearer $AWS_SESSION_TOKEN"
-      }
+      "url": "https://<your-lambda-url>.lambda-url.us-east-1.on.aws/"
     }
   }
 }

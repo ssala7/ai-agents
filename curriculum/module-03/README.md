@@ -13,7 +13,7 @@ Without tools, the AI can only generate text. With tools, it can read files, run
 ```
 Without tools:                    With tools:
   You: "Read my config"            You: "Read my config"
-  AI: "I can't read files."        AI: [calls fs_read("config.yaml")]
+  AI: "I can't read files."        AI: [calls read("config.yaml")]
                                    AI: "Your config has 3 sections..."
 ```
 
@@ -41,9 +41,9 @@ The **description is critical** — it's literally how the AI decides whether to
 
 | Tool | What it does | Example |
 |------|-------------|---------|
-| `fs_read` | Read files | Read README.md |
-| `fs_write` | Write/edit files | Create a new file |
-| `execute_bash` | Run shell commands | `npm test` |
+| `read` | Read files | Read README.md |
+| `write` | Write/edit files | Create a new file |
+| `shell` | Run shell commands | `npm test` |
 | `grep` | Search text in files | Find "TODO" in src/ |
 | `glob` | Find files by pattern | Find all *.py files |
 | `code` | Code intelligence (AST) | Find function definitions |
@@ -139,14 +139,14 @@ Not all tools should run freely. Kiro has a permission system:
 
 ```json
 {
-  "tools": ["fs_read", "fs_write", "execute_bash"],
-  "allowedTools": ["fs_read"],
+  "tools": ["read", "write", "shell"],
+  "allowedTools": ["read"],
   "toolsSettings": {
-    "fs_write": {
+    "write": {
       "allowedPaths": ["src/**"],
       "deniedPaths": ["node_modules/**"]
     },
-    "execute_bash": {
+    "shell": {
       "allowedCommands": ["npm test", "npm run build"]
     }
   }
@@ -159,7 +159,7 @@ Not all tools should run freely. Kiro has a permission system:
 | `allowedTools` | Which tools run without asking you |
 | `toolsSettings` | Fine-grained restrictions per tool |
 
-Tools NOT in `allowedTools` will prompt you: "Allow fs_write to src/app.js? [y/n]"
+Tools NOT in `allowedTools` will prompt you: "Allow write to src/app.js? [y/n]"
 
 ## 3.7 Hooks — Intercepting Tool Calls
 
@@ -167,7 +167,7 @@ Hooks let you run custom scripts before/after tool execution:
 
 ```
 preToolUse hook:
-  Agent wants to call fs_write("production.env")
+  Agent wants to call write("production.env")
        │
        ▼
   Your hook script runs → checks the path
@@ -180,13 +180,68 @@ preToolUse hook:
 {
   "hooks": {
     "preToolUse": [
-      {"matcher": "fs_write", "command": "~/.kiro/hooks/validate-write.sh"}
+      {"matcher": "write", "command": "~/.kiro/hooks/validate-write.sh"}
     ]
   }
 }
 ```
 
 This is how you add safety rails without modifying the agent or model.
+
+## 3.8 Safety and Guardrails
+
+Agents execute real commands on your system. A misconfigured agent can delete files, overwrite code, or run destructive commands. Safety is not optional — it's part of the design.
+
+### Why this matters
+
+A chatbot that gives bad advice is annoying. An agent that runs bad advice is dangerous. When you give an agent tools like `shell` and `write`, you're giving it the ability to change your system. The agent will do what it thinks you asked — even if that's not what you meant.
+
+### The three layers of safety
+
+```
+Layer 1: Tool restrictions (what the agent CAN do)
+  └── tools, allowedTools, toolsSettings
+
+Layer 2: Confirmation prompts (what the agent MUST ask about)
+  └── Tools not in allowedTools require your approval
+
+Layer 3: Hooks (what gets checked automatically)
+  └── preToolUse hooks can block dangerous operations
+```
+
+### Practical guidelines
+
+| Guideline | Why |
+|-----------|-----|
+| Start with read-only tools | Add `write` and `shell` only when needed |
+| Use `allowedTools` narrowly | Auto-approve reads, require confirmation for writes |
+| Restrict paths | Use `allowedPaths`/`deniedPaths` to protect sensitive files |
+| Restrict commands | Use `allowedCommands` to limit what `shell` can run |
+| Review before approving | When the agent asks "Allow?", read what it wants to do |
+| Test in a safe directory | Don't point a new agent at your production code first |
+
+### Example: A safe default config
+
+```json
+{
+  "tools": ["read", "write", "shell", "grep", "glob"],
+  "allowedTools": ["read", "grep", "glob"],
+  "toolsSettings": {
+    "write": {
+      "deniedPaths": [".env", "*.key", "*.pem", "node_modules/**"]
+    },
+    "shell": {
+      "allowedCommands": ["npm test", "npm run build", "python -m pytest"]
+    }
+  }
+}
+```
+
+This config lets the agent read freely, but requires your approval for writes and only allows specific shell commands.
+
+### Key takeaway
+
+Tools give agents power. Permissions, confirmation prompts, and hooks give you control. Always configure both.
 
 ---
 
@@ -208,10 +263,10 @@ What tool would the AI use for each request?
 
 | Request | Tool |
 |---------|------|
-| "Read my package.json" | `fs_read` |
+| "Read my package.json" | `read` |
 | "Find all files named *.test.js" | `glob` |
 | "Search for 'deprecated' in the codebase" | `grep` |
-| "Run the test suite" | `execute_bash` (npm test) |
+| "Run the test suite" | `shell` (npm test) |
 | "Compare React vs Vue vs Svelte" | `subagent` (parallel research) |
 | "List my S3 buckets" | `use_aws` |
 

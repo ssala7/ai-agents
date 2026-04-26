@@ -87,7 +87,7 @@ Model receives the assembled context
 ## 2.4 What the Runtime Does AFTER the Model Responds
 
 ```
-Model output: {"tool": "fs_read", "params": {"path": "src/auth.py"}}
+Model output: {"tool": "read", "params": {"path": "src/auth.py"}}
                 │
                 ▼
 ┌─────────────────────────────────────────────────────┐
@@ -124,8 +124,8 @@ Model output: {"tool": "fs_read", "params": {"path": "src/auth.py"}}
                 │         │    requested by model
                 └─────────┘
 
-Round 1: You → Kiro assembles → Model thinks → "call fs_read"
-Round 2: Kiro executes fs_read → feeds result → Model thinks → "call grep"
+Round 1: You → Kiro assembles → Model thinks → "call read"
+Round 2: Kiro executes read → feeds result → Model thinks → "call grep"
 Round 3: Kiro executes grep → feeds result → Model thinks → "Here's the answer"
 Round 4: Kiro streams answer → You see it
 ```
@@ -165,7 +165,7 @@ Explain what a REST API is in one paragraph
 ```
 
 Notice the difference:
-- Command 1: you will see tool calls in the output (fs_read), then the model interprets the result. Both runtime and model are working.
+- Command 1: you will see tool calls in the output (read), then the model interprets the result. Both runtime and model are working.
 - Command 2: the model answers directly from its training. No tools called. The runtime just passes the message and streams the response.
 
 This is the runtime vs brain distinction in action.

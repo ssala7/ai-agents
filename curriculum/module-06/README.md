@@ -30,7 +30,7 @@
 
 ## 6.2 Context Window (Short-Term)
 
-Every message you send, I see the ENTIRE conversation so far:
+Every message you send, the model sees the ENTIRE conversation so far:
 
 ```
 ┌─────────────────────────────────────────┐

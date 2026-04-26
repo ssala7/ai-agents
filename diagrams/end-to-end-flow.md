@@ -34,7 +34,7 @@ This walks through exactly what happens from the moment you type something to wh
 │  The active agent (e.g. kiro_default) receives the prompt.          │
 │  Its config defines:                                                │
 │    • prompt → "You are a helpful assistant..."                      │
-│    • tools  → [fs_read, fs_write, subagent, ...]                   │
+│    • tools  → [read, write, subagent, ...]                   │
 │    • hooks  → agentSpawn, preToolUse, etc.                          │
 │                                                                     │
 │  [Hook] userPromptSubmit hooks run first                            │
@@ -150,7 +150,7 @@ You type → ACP → Agent → uses tools directly → ACP → You see response
 
 Example: "Read my package.json"
 
-  YOU ──▶ ACP ──▶ Agent ──▶ fs_read("package.json") ──▶ Agent ──▶ ACP ──▶ YOU
+  YOU ──▶ ACP ──▶ Agent ──▶ read("package.json") ──▶ Agent ──▶ ACP ──▶ YOU
                     │                                      ▲
                     │         preToolUse hook fires         │
                     └──────────────────────────────────────┘

@@ -103,29 +103,6 @@ And notification types the agent sends back:
 
 ## 5.5 MCP — Model Context Protocol
 
----
-
-### Try This Now
-
-Run this command in your terminal to see MCP in action — a real JSON-RPC exchange with the demo MCP server:
-
-```bash
-echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}' | python3 hands-on/mcp-server/server.py
-```
-
-Expected output: a JSON response with `protocolVersion` and `serverInfo`. That is the MCP handshake.
-
-Now list the tools:
-```bash
-echo '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' | python3 hands-on/mcp-server/server.py
-```
-
-Expected output: a JSON response listing `get_system_info` and `word_count` with their descriptions and parameter schemas.
-
-You just spoke MCP. Three messages — initialize, tools/list, tools/call — and you have a working tool server. That is the entire protocol.
-
----
-
 MCP is the protocol between the runtime and tool servers:
 
 ```
@@ -142,6 +119,35 @@ MCP has just three key methods:
 | `initialize` | Handshake |
 | `tools/list` | "What tools do you have?" |
 | `tools/call` | "Run this tool with these params" |
+
+---
+
+### Try This Now
+
+Run all three MCP methods against the demo server:
+
+```bash
+# 1. Handshake
+echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}' | python3 hands-on/mcp-server/server.py
+```
+
+Expected output: a JSON response with `protocolVersion` and `serverInfo`.
+
+```bash
+# 2. List tools
+echo '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' | python3 hands-on/mcp-server/server.py
+```
+
+Expected output: a JSON response listing `get_system_info` and `word_count` with their descriptions and parameter schemas.
+
+```bash
+# 3. Call a tool
+echo '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"get_system_info","arguments":{}}}' | python3 hands-on/mcp-server/server.py
+```
+
+Expected output: your OS, current time, and disk usage.
+
+You just spoke MCP. Three messages — initialize, tools/list, tools/call — and you have a working tool server. That is the entire protocol.
 
 ## 5.6 How All Protocols Connect
 

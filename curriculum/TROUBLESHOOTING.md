@@ -33,7 +33,7 @@ The model starts forgetting or giving confused answers.
 ### Tool permission prompts are annoying
 Every tool call asks "Allow?".
 - `/tools trust-all` — auto-approve everything (use during learning, not production)
-- `/tools trust fs_read` — trust specific safe tools
+- `/tools trust read` — trust specific safe tools
 - `/tools reset` — restore prompts when done
 
 ---

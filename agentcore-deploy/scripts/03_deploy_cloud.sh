@@ -47,9 +47,20 @@ while [ $ELAPSED -lt $MAX_WAIT ]; do
     if echo "$STATUS" | grep -qi "READY\|running\|active"; then
         break
     fi
+    if echo "$STATUS" | grep -qi "FAILED\|ERROR\|error"; then
+        echo ""
+        echo "  ERROR: Deployment failed. Check logs with: agentcore logs"
+        exit 1
+    fi
     sleep $POLL_INTERVAL
     ELAPSED=$((ELAPSED + POLL_INTERVAL))
 done
+
+if [ $ELAPSED -ge $MAX_WAIT ]; then
+    echo ""
+    echo "  ERROR: Timed out after ${MAX_WAIT}s. Check status with: agentcore status"
+    exit 1
+fi
 
 echo ""
 echo "==> [3/3] Running live cloud invocation..."
