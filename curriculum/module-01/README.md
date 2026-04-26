@@ -50,10 +50,10 @@ Without tools, they can only talk. Without memory, they forget everything betwee
 
 | | Chatbot | Automation (script) | Agent |
 |---|---|---|---|
-| Understands language? | ✅ | ❌ | ✅ |
-| Takes actions? | ❌ | ✅ | ✅ |
-| Adapts to new situations? | Somewhat | ❌ | ✅ |
-| Handles ambiguity? | ✅ | ❌ | ✅ |
+| Understands language? | Yes | No | Yes |
+| Takes actions? | No | Yes | Yes |
+| Adapts to new situations? | Somewhat | No | Yes |
+| Handles ambiguity? | Yes | No | Yes |
 | Follows a fixed script? | Often | Always | Never |
 
 An agent combines the language understanding of a chatbot with the action-taking of automation, plus the ability to adapt.
@@ -105,7 +105,25 @@ Every agent runs the same fundamental loop:
                   (loop until done)
 ```
 
-This is called the **Think → Act → Observe** loop. It repeats until the agent has enough information to give you a final answer.
+This is called the **Think --> Act --> Observe** loop. It repeats until the agent has enough information to give you a final answer.
+
+---
+
+### Try This Now
+
+Open Kiro and type this:
+
+```
+What files are in the current directory and which is the largest?
+```
+
+Watch what happens in the output. You will see:
+1. The agent calls a tool (likely `glob` or `shell`) to list files
+2. It calls another tool to check sizes
+3. It reasons about the results
+4. It gives you a plain text answer
+
+That sequence — think, act, observe, repeat — is the agent loop running in real time. Every agent works this way.
 
 ---
 
@@ -141,7 +159,6 @@ For Kiro, identify what plays each role:
 | Brain | ? |
 | Tools | ? |
 | Memory | ? |
-| Communication | ? |
 
 <details>
 <summary>Answer</summary>
@@ -151,7 +168,6 @@ For Kiro, identify what plays each role:
 | Brain | Claude (LLM model, can be swapped via Bedrock) |
 | Tools | fs_read, fs_write, shell, grep, glob, code, use_aws, knowledge, web_search, subagent, etc. |
 | Memory | Context window (short-term, this session) + Knowledge base (long-term, across sessions) |
-| Communication | ACP protocol (JSON-RPC over stdio) |
 
 </details>
 
@@ -172,6 +188,16 @@ Watch what happens:
 4. It gives you a final answer
 
 That's the Think → Act → Observe loop in action.
+
+---
+
+## Expected Outcomes
+
+After completing this module and its exercises, you should be able to:
+- Distinguish between a chatbot, an automation script, and an agent
+- Name the three core parts of any agent (brain, tools, memory)
+- Describe the Think-Act-Observe loop and recognize it in Kiro's output
+- Identify which real-world systems qualify as agents and why
 
 ---
 

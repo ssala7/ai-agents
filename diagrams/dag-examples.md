@@ -102,9 +102,9 @@ Config:
 ## Invalid DAGs (cycles)
 
 ```
-❌ A → B → C → A        (circular — infinite loop)
-❌ A → B → A             (mutual dependency)
-❌ A → A                  (self-dependency)
+INVALID: A -> B -> C -> A        (circular — infinite loop)
+INVALID: A -> B -> A             (mutual dependency)
+INVALID: A -> A                  (self-dependency)
 ```
 
 These will be rejected by Kiro.

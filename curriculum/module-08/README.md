@@ -33,7 +33,7 @@ An MCP server is a program that reads JSON-RPC from stdin and writes responses t
 ### Step 2: Examine the working example
 
 ```bash
-cat kiro-concepts-demo/hands-on/mcp-server/server.py
+cat hands-on/mcp-server/server.py
 ```
 
 Key parts to notice:
@@ -46,19 +46,19 @@ Key parts to notice:
 
 ```bash
 # Handshake
-echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}' | python3 kiro-concepts-demo/hands-on/mcp-server/server.py
+echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}' | python3 hands-on/mcp-server/server.py
 
 # List tools
-echo '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' | python3 kiro-concepts-demo/hands-on/mcp-server/server.py
+echo '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' | python3 hands-on/mcp-server/server.py
 
 # Call get_system_info
-echo '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"get_system_info","arguments":{}}}' | python3 kiro-concepts-demo/hands-on/mcp-server/server.py
+echo '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"get_system_info","arguments":{}}}' | python3 hands-on/mcp-server/server.py
 
 # Call word_count
-echo '{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"word_count","arguments":{"text":"hello world test"}}}' | python3 kiro-concepts-demo/hands-on/mcp-server/server.py
+echo '{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"word_count","arguments":{"text":"hello world test"}}}' | python3 hands-on/mcp-server/server.py
 ```
 
-✅ **Checkpoint:** You should see JSON responses for each command.
+**Checkpoint:** You should see JSON responses for each command.
 
 ---
 
@@ -67,7 +67,7 @@ echo '{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"word_count
 ### Step 1: Examine the agent config
 
 ```bash
-cat kiro-concepts-demo/hands-on/agent/demo-agent.json
+cat hands-on/agent/demo-agent.json
 ```
 
 Notice:
@@ -77,10 +77,10 @@ Notice:
 ### Step 2: Install it
 
 ```bash
-cp kiro-concepts-demo/hands-on/agent/demo-agent.json ~/.kiro/agents/demo-agent.json
+cp hands-on/agent/demo-agent.json ~/.kiro/agents/demo-agent.json
 ```
 
-✅ **Checkpoint:** Run `/agent` in Kiro — you should see `demo-agent` in the list.
+**Checkpoint:** Run `/agent` in Kiro — you should see `demo-agent` in the list.
 
 ---
 
@@ -110,7 +110,7 @@ Count the words in: The quick brown fox jumps over the lazy dog
 
 Check `/tools` — you should see `@demo-tools/get_system_info` and `@demo-tools/word_count` listed.
 
-✅ **Checkpoint:** Both tools work through Kiro.
+**Checkpoint:** Both tools work through Kiro.
 
 ---
 
@@ -124,7 +124,7 @@ Check `/tools` — you should see `@demo-tools/get_system_info` and `@demo-tools
 
 ### Step 1: Add to tools/list
 
-Open `kiro-concepts-demo/hands-on/mcp-server/server.py` and add to the tools array:
+Open `hands-on/mcp-server/server.py` and add to the tools array:
 
 ```python
 {
@@ -160,7 +160,7 @@ elif name == "convert_temperature":
 ### Step 3: Test manually
 
 ```bash
-echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"convert_temperature","arguments":{"value":100,"direction":"c_to_f"}}}' | python3 kiro-concepts-demo/hands-on/mcp-server/server.py
+echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"convert_temperature","arguments":{"value":100,"direction":"c_to_f"}}}' | python3 hands-on/mcp-server/server.py
 ```
 
 Expected: `100°C = 212°F`
@@ -178,7 +178,7 @@ Then ask:
 What is 37 degrees Celsius in Fahrenheit?
 ```
 
-✅ **Checkpoint:** Kiro uses YOUR `convert_temperature` tool and returns 98.6°F.
+**Checkpoint:** Kiro uses YOUR `convert_temperature` tool and returns 98.6°F.
 
 ---
 
@@ -186,7 +186,7 @@ What is 37 degrees Celsius in Fahrenheit?
 
 ### Step 1: Create a Lambda wrapper
 
-Create `kiro-concepts-demo/hands-on/mcp-server/lambda_handler.py`:
+Create `hands-on/mcp-server/lambda_handler.py`:
 
 ```python
 import json
@@ -201,7 +201,7 @@ def handler(event, context):
 ### Step 2: Deploy
 
 ```bash
-cd kiro-concepts-demo/hands-on/mcp-server
+cd hands-on/mcp-server
 zip function.zip server.py lambda_handler.py
 
 aws lambda create-function \
@@ -231,7 +231,7 @@ aws lambda create-function-url-config \
 }
 ```
 
-✅ **Checkpoint:** Same tools, now running on AWS.
+**Checkpoint:** Same tools, now running on AWS.
 
 ---
 
@@ -277,6 +277,28 @@ aws lambda create-function-url-config \
 
 ---
 
+## Expected Outcomes
+
+After completing this lab, you should be able to:
+- Build an MCP server from scratch that speaks JSON-RPC over stdio
+- Define tools with names, descriptions, and parameter schemas
+- Create an agent configuration that connects to your custom MCP server
+- Test the full flow: agent receives your question, calls your tool, returns the result
+- Add new tools to an existing MCP server and reload them in Kiro
+- Describe the three-step deploy flow for AWS AgentCore (configure, test local, deploy)
+
+---
+
+## Check Your Understanding
+
+1. What three JSON-RPC methods must an MCP server handle?
+2. Why does the tool description matter more than the tool name?
+3. What happens when you switch agents in Kiro — does the MCP server restart?
+4. What is the difference between a local MCP server (stdio) and a remote one (HTTP)?
+5. In the agent config, what does `allowedTools` do that `tools` does not?
+
+---
+
 ## What's Next?
 
 - **Explore agent configs:** Create specialized agents for your projects
@@ -287,6 +309,14 @@ aws lambda create-function-url-config \
 
 ---
 
-## 🎓 Congratulations!
+## Congratulations!
 
 You now understand how AI agents work from the inside out. Not just theory — you built one.
+
+---
+
+## Next: Deploy to Production
+
+Ready to take your agent to AWS? The Advanced track covers containerized deployment with Bedrock AgentCore.
+
+Go to: [Bridge: From Kiro Agents to Production](../BRIDGE.md)

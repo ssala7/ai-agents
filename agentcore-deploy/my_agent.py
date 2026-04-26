@@ -4,7 +4,7 @@ A simple but complete agent with tools, ready for cloud deployment.
 """
 
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 
 from strands import Agent, tool
 from bedrock_agentcore.runtime import BedrockAgentCoreApp
@@ -51,7 +51,7 @@ def calculate(expression: str) -> str:
 @tool
 def get_current_time() -> str:
     """Return the current UTC date and time."""
-    return json.dumps({"utc_time": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")})
+    return json.dumps({"utc_time": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")})
 
 
 # ── AgentCore app ─────────────────────────────────────────────────────────────

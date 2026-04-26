@@ -103,6 +103,29 @@ And notification types the agent sends back:
 
 ## 5.5 MCP — Model Context Protocol
 
+---
+
+### Try This Now
+
+Run this command in your terminal to see MCP in action — a real JSON-RPC exchange with the demo MCP server:
+
+```bash
+echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}' | python3 hands-on/mcp-server/server.py
+```
+
+Expected output: a JSON response with `protocolVersion` and `serverInfo`. That is the MCP handshake.
+
+Now list the tools:
+```bash
+echo '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' | python3 hands-on/mcp-server/server.py
+```
+
+Expected output: a JSON response listing `get_system_info` and `word_count` with their descriptions and parameter schemas.
+
+You just spoke MCP. Three messages — initialize, tools/list, tools/call — and you have a working tool server. That is the entire protocol.
+
+---
+
 MCP is the protocol between the runtime and tool servers:
 
 ```
@@ -192,13 +215,13 @@ Run these commands and observe the JSON-RPC exchange:
 
 ```bash
 # MCP: List tools
-echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | python3 kiro-concepts-demo/hands-on/mcp-server/server.py
+echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | python3 hands-on/mcp-server/server.py
 
 # MCP: Call a tool
-echo '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"get_system_info","arguments":{}}}' | python3 kiro-concepts-demo/hands-on/mcp-server/server.py
+echo '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"get_system_info","arguments":{}}}' | python3 hands-on/mcp-server/server.py
 
 # MCP: Call with wrong method
-echo '{"jsonrpc":"2.0","id":3,"method":"tools/delete","params":{}}' | python3 kiro-concepts-demo/hands-on/mcp-server/server.py
+echo '{"jsonrpc":"2.0","id":3,"method":"tools/delete","params":{}}' | python3 hands-on/mcp-server/server.py
 ```
 
 ---
@@ -229,6 +252,16 @@ Write the JSON-RPC messages for this scenario:
 ```
 
 </details>
+
+---
+
+## Expected Outcomes
+
+After completing this module and its exercises, you should be able to:
+- Explain what JSON-RPC is and what the `id`, `method`, `params`, `result`, and `error` fields do
+- Distinguish between ACP (client-to-agent) and MCP (agent-to-tools)
+- Send a valid JSON-RPC message to an MCP server and interpret the response
+- Describe the difference between stdio and HTTP transport
 
 ---
 

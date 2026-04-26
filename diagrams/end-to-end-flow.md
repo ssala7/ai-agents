@@ -37,7 +37,7 @@ This walks through exactly what happens from the moment you type something to wh
 │    • tools  → [fs_read, fs_write, subagent, ...]                   │
 │    • hooks  → agentSpawn, preToolUse, etc.                          │
 │                                                                     │
-│  ⚡ Hooks fire: userPromptSubmit hooks run first                    │
+│  [Hook] userPromptSubmit hooks run first                            │
 │                                                                     │
 │  The AI decides: "This needs parallel research. I'll use subagent." │
 │                                                                     │
@@ -59,7 +59,7 @@ This walks through exactly what happens from the moment you type something to wh
 │  │ }                                                    │           │
 │  └──────────────────────────────────────────────────────┘           │
 │                                                                     │
-│  ⚡ Hooks fire: preToolUse for "subagent" tool                      │
+│  [Hook] preToolUse for "subagent" tool                              │
 │                                                                     │
 └──────────────────────────────┬──────────────────────────────────────┘
                                │
@@ -119,8 +119,8 @@ This walks through exactly what happens from the moment you type something to wh
 │                                                                     │
 │  Main agent receives all summaries.                                 │
 │                                                                     │
-│  ⚡ Hooks fire: postToolUse for "subagent" tool                     │
-│  ⚡ Hooks fire: stop (agent finished responding)                    │
+│  [Hook] postToolUse for "subagent" tool                             │
+│  [Hook] stop (agent finished responding)                            │
 │                                                                     │
 │  Response sent back via ACP:                                        │
 │  ┌────────────────────────────────────────────┐                     │

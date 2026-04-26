@@ -83,6 +83,32 @@ With the bad description, the model has no idea when to use it. With the good on
 
 **The description is the tool's advertisement to the AI.**
 
+---
+
+### Try This Now
+
+Ask Kiro the same question two different ways and see if it picks the same tool:
+
+```
+How many lines are in my README?
+```
+
+```
+Count the lines in README.md
+```
+
+Both should trigger a tool call, but the model might pick different tools (shell with `wc -l`, or fs_read then count, or grep with `-c`). The model is probabilistic — it picks the most likely tool based on pattern matching, not a fixed rule. Run both and compare.
+
+Then try this — a request where no tool is needed:
+
+```
+What is the difference between TCP and UDP?
+```
+
+The model answers from its training data. No tool call. It knows when tools are unnecessary.
+
+---
+
 ## 4.5 The Generation Format
 
 When the model decides to use a tool, it generates a structured output:
@@ -229,6 +255,17 @@ Watch and note:
 2. Did the model use one tool call or multiple?
 3. Did it use `shell` (one command) or `glob` + `fs_read` (multiple tools)?
 4. Could it have done it differently?
+
+---
+
+## Expected Outcomes
+
+After completing this module and its exercises, you should be able to:
+- Explain that tool selection is probabilistic, not rule-based
+- Predict which tool the model will pick for a given request
+- Write a good tool description that the model can match against
+- Describe the multi-turn loop and how the model knows when to stop
+- Identify common failure modes (wrong tool, hallucinated params, skipped tool call)
 
 ---
 

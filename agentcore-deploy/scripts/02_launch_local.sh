@@ -56,7 +56,7 @@ echo "--- Test 4: Time tool ---"
 agentcore invoke --local '{"prompt": "What time is it right now?"}'
 echo ""
 
-echo "✅  Local tests complete."
+echo "  Local tests complete."
 echo "    Stop the local server with Ctrl+C, then run ./scripts/03_deploy_cloud.sh"
 
 # Wait for user to stop

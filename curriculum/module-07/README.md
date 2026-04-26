@@ -99,6 +99,27 @@ What happens:
 
 ## 7.5 Session Management — Agent Messaging
 
+---
+
+### Try This Now
+
+Spawn a background session and watch it work:
+
+```
+/spawn List all files in the current directory and count how many are Python files
+```
+
+Now immediately press `Ctrl+G` to open the crew monitor. You will see:
+- Your main session (the one you are chatting in)
+- The spawned session (running the task you gave it)
+- Status indicators showing which is active/idle/done
+
+This is multi-agent coordination in action — two sessions running in parallel, each with their own agent instance.
+
+When the spawned session finishes, its result appears in your main session.
+
+---
+
 Under the hood, agents coordinate via an inbox system:
 
 ```
@@ -245,6 +266,17 @@ Then try manual spawning:
 /spawn List all TODO comments in the current directory
 ```
 Press `Ctrl+G` to monitor it.
+
+---
+
+## Expected Outcomes
+
+After completing this module and its exercises, you should be able to:
+- Define what a DAG is and identify valid vs invalid DAGs
+- Design a DAG for a multi-step task with parallel and sequential stages
+- Use `/spawn` to create a parallel session and monitor it with `Ctrl+G`
+- Explain how subagents report results back via the `summary()` tool
+- Describe the session messaging system (spawn, send, broadcast, interrupt)
 
 ---
 

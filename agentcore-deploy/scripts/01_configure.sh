@@ -44,5 +44,5 @@ cd "$PROJECT_DIR"
 agentcore configure --entrypoint "$AGENT_FILE"
 
 echo ""
-echo "✅  Configuration complete."
+echo "  Configuration complete."
 echo "    Next step: run ./scripts/02_launch_local.sh to test locally"

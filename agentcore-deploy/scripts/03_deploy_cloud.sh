@@ -64,7 +64,7 @@ agentcore invoke '{"prompt": "Calculate 2 to the power of 10"}'
 echo ""
 
 echo ""
-echo "✅  Deployment complete!"
+echo "  Deployment complete!"
 echo ""
 echo "    Useful commands:"
 echo "      agentcore status              — check endpoint status"

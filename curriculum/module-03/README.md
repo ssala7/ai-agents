@@ -54,6 +54,31 @@ The **description is critical** — it's literally how the AI decides whether to
 | `todo_list` | Track tasks | Create/complete tasks |
 | `subagent` | Spawn other agents | Parallel research |
 
+---
+
+### Try This Now
+
+Run each of these in Kiro and watch which tool gets called:
+
+```
+Find all .md files in this directory
+```
+Expected: you will see `glob` called with a pattern like `**/*.md`.
+
+```
+Search for the word "TODO" in all files
+```
+Expected: you will see `grep` called with pattern `TODO`.
+
+```
+What operating system am I running?
+```
+Expected: you will see `shell` called with a command like `uname -a`.
+
+Each request triggers a different tool. The agent picks the tool based on your intent and the tool descriptions it was given. That matching process is covered in Module 4.
+
+---
+
 ## 3.4 Tool vs Subagent
 
 This confuses people. A subagent IS a tool — but a special one:
@@ -200,10 +225,10 @@ Run this in your terminal:
 
 ```bash
 # List available tools
-echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | python3 kiro-concepts-demo/hands-on/mcp-server/server.py
+echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | python3 hands-on/mcp-server/server.py
 
 # Call a tool
-echo '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"word_count","arguments":{"text":"hello world foo bar"}}}' | python3 kiro-concepts-demo/hands-on/mcp-server/server.py
+echo '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"word_count","arguments":{"text":"hello world foo bar"}}}' | python3 hands-on/mcp-server/server.py
 ```
 
 Questions:
@@ -253,6 +278,17 @@ Design a tool definition (just the JSON schema) for a tool that:
 The description is key — it tells the AI WHEN to use this tool. If someone says "what's 100°C in Fahrenheit?", the AI matches that intent to this description.
 
 </details>
+
+---
+
+## Expected Outcomes
+
+After completing this module and its exercises, you should be able to:
+- Name the three parts of a tool definition (name, description, input schema)
+- Match a user request to the correct tool
+- Explain the difference between a regular tool and the subagent tool
+- Describe how custom tools are added via MCP servers
+- Design a tool definition (JSON schema) for a new capability
 
 ---
 

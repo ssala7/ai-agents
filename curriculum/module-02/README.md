@@ -150,6 +150,28 @@ Round 4: Kiro streams answer → You see it
 
 ---
 
+### Try This Now
+
+Run these two commands in Kiro and compare what happens:
+
+**Command 1 — triggers tool calls (runtime + model working together):**
+```
+Read my package.json and tell me what dependencies I have
+```
+
+**Command 2 — no tools needed (model only):**
+```
+Explain what a REST API is in one paragraph
+```
+
+Notice the difference:
+- Command 1: you will see tool calls in the output (fs_read), then the model interprets the result. Both runtime and model are working.
+- Command 2: the model answers directly from its training. No tools called. The runtime just passes the message and streams the response.
+
+This is the runtime vs brain distinction in action.
+
+---
+
 ## Exercise 2.1: Who Does What?
 
 Label each task as "Runtime" or "Model":
@@ -215,6 +237,16 @@ Count:
 - How many "rounds" (model calls) did it take?
 - Which tools were called?
 - At what point did the model decide it had enough info?
+
+---
+
+## Expected Outcomes
+
+After completing this module and its exercises, you should be able to:
+- Explain what the runtime does before the model sees anything
+- Label any agent task as "runtime responsibility" or "model responsibility"
+- Predict what breaks when you remove the model, tools, history, or prompt
+- Understand why the model is stateless and the runtime manages state
 
 ---
 

@@ -16,7 +16,7 @@ This is a practical walkthrough. No theory — just do it and see it work.
 
 ```bash
 # Send a tools/list request to see what tools are available
-echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | python3 kiro-concepts-demo/hands-on/mcp-server/server.py
+echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | python3 hands-on/mcp-server/server.py
 ```
 
 Expected output:
@@ -27,13 +27,13 @@ Expected output:
 ### Call a tool manually
 
 ```bash
-echo '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"get_system_info","arguments":{}}}' | python3 kiro-concepts-demo/hands-on/mcp-server/server.py
+echo '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"get_system_info","arguments":{}}}' | python3 hands-on/mcp-server/server.py
 ```
 
 You'll see your OS, current time, and disk usage.
 
 ```bash
-echo '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"word_count","arguments":{"text":"hello world this is a test"}}}' | python3 kiro-concepts-demo/hands-on/mcp-server/server.py
+echo '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"word_count","arguments":{"text":"hello world this is a test"}}}' | python3 hands-on/mcp-server/server.py
 ```
 
 You'll see: Words: 6, Lines: 1, Chars: 26
@@ -45,7 +45,7 @@ You'll see: Words: 6, Lines: 1, Chars: 26
 ### Option A: Copy agent to your agents folder
 
 ```bash
-cp kiro-concepts-demo/hands-on/agent/demo-agent.json ~/.kiro/agents/demo-agent.json
+cp hands-on/agent/demo-agent.json ~/.kiro/agents/demo-agent.json
 ```
 
 Then in Kiro:
@@ -56,7 +56,7 @@ Then in Kiro:
 ### Option B: Add MCP server to your current agent
 
 ```bash
-kiro-cli mcp add --name demo-tools --command python3 --args ./kiro-concepts-demo/hands-on/mcp-server/server.py
+kiro-cli mcp add --name demo-tools --command python3 --args ./hands-on/mcp-server/server.py
 ```
 
 ### Try it
@@ -190,7 +190,7 @@ def handler(event, context):
 Deploy:
 ```bash
 # Zip and deploy
-cd kiro-concepts-demo/hands-on/mcp-server
+cd hands-on/mcp-server
 zip function.zip server.py lambda_handler.py
 
 aws lambda create-function \

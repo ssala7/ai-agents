@@ -98,9 +98,11 @@ Expected output:
 ## Step 2 — Clone the Repo and Navigate to the Project
 
 ```bash
-git clone git@github.com:ssala7/ai-agents.git
+git clone https://github.com/ssala7/ai-agents.git
 cd ai-agents/agentcore-deploy
 ```
+
+If you prefer SSH: `git clone git@github.com:ssala7/ai-agents.git`
 
 Project structure:
 ```

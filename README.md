@@ -1,352 +1,305 @@
-# Kiro Concepts Demo 🧠
+# AI Agents — From Fundamentals to Production
 
-Learn how Kiro orchestrates AI agents using ACP, DAGs, Subagents, and Session Management.
+A structured, hands-on curriculum for understanding, building, and deploying AI agents. Covers agent architecture, tool systems, multi-agent coordination, and production deployment on AWS.
+
+## What You Will Build
+
+By the end of this curriculum, you will have:
+
+- Understood the internal architecture of AI agents (brain, tools, memory, protocols)
+- Built a custom AI tool (MCP server) from scratch in Python
+- Created a specialized agent configuration and wired it to your tools
+- Tested the full agent loop: your input -> model reasoning -> tool execution -> result
+- Understood how multi-agent DAG pipelines coordinate parallel work
+- Deployed a production agent to AWS Bedrock AgentCore with observability
+
+---
 
 ## Table of Contents
-1. [ACP — Agent Client Protocol](#1-acp--agent-client-protocol)
-2. [DAG — Directed Acyclic Graph](#2-dag--directed-acyclic-graph)
-3. [Subagent — Multi-Agent Pipelines](#3-subagent--multi-agent-pipelines)
-4. [Session Management — Agent Coordination](#4-session-management--agent-coordination)
+
+- [Who Is This For](#who-is-this-for)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Learning Tracks](#learning-tracks)
+  - [Basics — What Are AI Agents?](#basics--what-are-ai-agents)
+  - [Intermediate — Build and Extend Agents](#intermediate--build-and-extend-agents)
+  - [Advanced — Multi-Agent Systems and Production Deployment](#advanced--multi-agent-systems-and-production-deployment)
+- [Repository Structure](#repository-structure)
+- [Quick Start](#quick-start)
+- [Reference Materials](#reference-materials)
+- [Contributing](#contributing)
 
 ---
 
-## 1. ACP — Agent Client Protocol
+## Who Is This For
 
-**What:** An open protocol (like HTTP for web, but for AI agents) that standardizes how clients talk to AI agents.
+- Developers who want to understand how AI agents work internally
+- Team leads evaluating agent frameworks and architectures
+- Engineers building agent-powered products
+- Anyone curious about how tools like Kiro, Cursor, and Copilot work under the hood
 
-**How it works:**
-```
-┌──────────┐   JSON-RPC (stdin)    ┌──────────────┐
-│  Client  │ ───────────────────▶  │  Kiro Agent  │
-│  (TUI)   │ ◀───────────────────  │  (ACP mode)  │
-└──────────┘   JSON-RPC (stdout)   └──────────────┘
-```
+No AI/ML background required. Basic programming and terminal familiarity is enough.
 
-**Key methods:**
-| Method | What it does |
-|--------|-------------|
-| `initialize` | Handshake — exchange capabilities |
-| `session/new` | Create a new chat session |
-| `session/prompt` | Send a message to the agent |
-| `session/cancel` | Cancel current operation |
+---
 
-**Start ACP mode:**
+## Prerequisites
+
+| Requirement | Check | Install |
+|-------------|-------|---------|
+| Python 3.11+ | `python3 --version` | [python.org](https://python.org) |
+| Kiro CLI | `kiro-cli --version` | See Installation below |
+| AWS CLI v2 (for Advanced track) | `aws --version` | [AWS CLI install guide](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) |
+| Docker (for Advanced track) | `docker --version` | [docker.com](https://docker.com) |
+| AWS account with Bedrock access (for Advanced track) | AWS Console | [aws.amazon.com](https://aws.amazon.com) |
+
+---
+
+## Installation
+
+### Install Kiro CLI
+
+macOS:
 ```bash
-kiro-cli acp
-# Now it reads JSON-RPC from stdin, writes to stdout
+brew install kiro-cli
 ```
 
-**Real-world analogy:** ACP is like a waiter taking your order (client request) to the kitchen (agent) and bringing back food (response). The protocol defines the menu format.
-
----
-
-## 2. DAG — Directed Acyclic Graph
-
-**What:** A way to define task dependencies — which tasks can run in parallel and which must wait.
-
-**Rules:**
-- **Directed** → tasks flow in one direction (A → B, never B → A)
-- **Acyclic** → no loops (A → B → C → A is forbidden)
-- **Graph** → tasks are nodes, dependencies are edges
-
-**Visual:**
-```
-        ┌───────────────────────────────────┐
-        │         NO dependencies?          │
-        │         → Run in PARALLEL         │
-        └───────────────────────────────────┘
-
-Example: Research Jest AND Research Vitest simultaneously
-
-        ┌──────────┐       ┌──────────────┐
-        │  Jest    │       │   Vitest     │
-        │ Research │       │  Research    │
-        └────┬─────┘       └──────┬───────┘
-             │                    │
-             └────────┬───────────┘
-                      ▼
-              ┌──────────────┐
-              │  Compare &   │    ← depends_on: [jest, vitest]
-              │  Recommend   │
-              └──────────────┘
+Linux:
+```bash
+curl -fsSL https://kiro.dev/install.sh | bash
 ```
 
-**Invalid DAG (cycle):**
-```
-    A → B → C → A   ❌  This loops forever!
-```
-
-See `diagrams/dag-examples.md` for more visual examples.
-
----
-
-## 3. Subagent — Multi-Agent Pipelines
-
-**What:** A tool that spawns multiple AI agents as a pipeline. Each stage is a separate session running a specialized task.
-
-**How to think about it:**
-```
-You (main agent)
- ├── spawns → Stage 1 (researcher)     ─┐
- ├── spawns → Stage 2 (researcher)     ─┤── parallel
- └── waits for both, then:              ─┘
-     spawns → Stage 3 (implementer)    ← sequential
+Verify:
+```bash
+kiro-cli --version
 ```
 
-**Real example you can ask Kiro:**
-```
-"Compare React vs Vue vs Svelte for my project"
-```
-
-Kiro internally does:
-```json
-{
-  "task": "Compare frontend frameworks",
-  "stages": [
-    {"name": "react-research", "role": "kiro_default", "prompt_template": "Research React for {task}"},
-    {"name": "vue-research", "role": "kiro_default", "prompt_template": "Research Vue for {task}"},
-    {"name": "svelte-research", "role": "kiro_default", "prompt_template": "Research Svelte for {task}"},
-    {"name": "comparison", "role": "kiro_default", "prompt_template": "Compare findings for {task}",
-     "depends_on": ["react-research", "vue-research", "svelte-research"]}
-  ]
-}
+Start a chat session:
+```bash
+kiro-cli chat
 ```
 
-**Three patterns:**
+### Clone This Repository
 
-| Pattern | Shape | Use case |
-|---------|-------|----------|
-| Parallel | `═══` | Independent research |
-| Sequential | `→→→` | Research → Implement → Review |
-| Fan-out/Fan-in | `<>` | Parallel work → single summary |
-
-See `examples/` for runnable pipeline configs.
-
----
-
-## 4. Session Management — Agent Coordination
-
-**What:** The internal messaging system agents use to talk to each other.
-
-**Think of it like a team chat:**
-```
-┌─────────────────────────────────────────────┐
-│  Session: "auth-reviewer"                    │
-│  Status: active                              │
-│  Inbox: 2 messages                           │
-│  Group: review-team                          │
-├─────────────────────────────────────────────┤
-│  Session: "perf-analyzer"                    │
-│  Status: idle                                │
-│  Inbox: 0 messages                           │
-│  Group: review-team                          │
-└─────────────────────────────────────────────┘
+```bash
+git clone https://github.com/ssala7/ai-agents.git
+cd ai-agents
 ```
 
-**Available commands:**
+### Enable Knowledge Base (optional, for Module 6)
 
-| Command | What it does | Analogy |
-|---------|-------------|---------|
-| `spawn_session` | Create a new agent session | Hiring a new team member |
-| `send_message` | Send msg to another session | Slack DM |
-| `read_messages` | Check your inbox | Reading notifications |
-| `list_sessions` | See all sessions | Team roster |
-| `manage_group` | Group sessions together | Creating a Slack channel |
-| `broadcast` | Message all in a group | @channel message |
-| `interrupt` | Redirect a session's task | "Drop that, do this instead" |
-| `inject_context` | Silently add info to session | Sharing a doc without pinging |
-| `revive_session` | Restart a terminated session | Re-hiring someone |
-
-See `cheatsheets/session-commands.md` for the full reference.
-
----
-
-## How They All Connect
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    YOU (User)                             │
-└────────────────────────┬────────────────────────────────┘
-                         │ (types a request)
-                         ▼
-┌─────────────────────────────────────────────────────────┐
-│              ACP Layer (JSON-RPC protocol)                │
-│         Handles: session/new, session/prompt, etc.       │
-└────────────────────────┬────────────────────────────────┘
-                         │
-                         ▼
-┌─────────────────────────────────────────────────────────┐
-│              Main Agent (your chat session)               │
-│         Decides: "I need multiple agents for this"       │
-└────────────────────────┬────────────────────────────────┘
-                         │ uses subagent tool
-                         ▼
-┌─────────────────────────────────────────────────────────┐
-│              DAG Scheduler                                │
-│         Resolves dependencies, decides execution order   │
-└──────────┬─────────────┼─────────────┬──────────────────┘
-           │             │             │
-           ▼             ▼             ▼
-┌────────────┐  ┌────────────┐  ┌────────────┐
-│ Session A  │  │ Session B  │  │ Session C  │  ← parallel
-│ (research) │  │ (research) │  │ (waits...) │
-└─────┬──────┘  └─────┬──────┘  └────────────┘
-      │                │                ▲
-      │  summary()     │  summary()     │ depends_on A,B
-      └────────────────┴────────────────┘
-                       │
-                       ▼
-              Session C starts → summary() → Main Agent → You
+```bash
+kiro-cli settings chat.enableKnowledge true
 ```
 
 ---
 
-## 5. Kiro Slash Commands — Quick Reference
+## Learning Tracks
 
-Kiro has a rich set of `/` commands you can type directly in the chat. Here are the most useful ones:
-
-### Session & Conversation
-| Command | What it does |
-|---------|-------------|
-| `/chat save <name>` | Save current conversation to a file |
-| `/chat load <name>` | Load a previously saved conversation |
-| `/chat new` | Start a fresh conversation |
-| `/clear` | Clear conversation history |
-| `/compact` | Summarize old turns to free up context space |
-| `/transcript` | View full conversation in your pager |
-
-### Agents & Models
-| Command | What it does |
-|---------|-------------|
-| `/agent` | List all agents |
-| `/agent <name>` | Switch to a specific agent |
-| `/agent create <name>` | Create a new agent |
-| `/plan <idea>` | Switch to planner agent with a task |
-| `/guide <question>` | Ask the guide agent about Kiro itself |
-| `/model` | List models or switch to a different one |
-
-### Context & Knowledge
-| Command | What it does |
-|---------|-------------|
-| `/context add <path>` | Add files to the agent's context |
-| `/context clear` | Remove all context files |
-| `/knowledge add <name> <path>` | Index files for persistent semantic search |
-| `/knowledge show` | List all knowledge base entries |
-
-### Tools & MCP
-| Command | What it does |
-|---------|-------------|
-| `/tools` | Show available tools and trust status |
-| `/tools trust-all` | Auto-approve all tools (no more prompts) |
-| `/tools trust <name>` | Trust a specific tool |
-| `/mcp` | Show connected MCP servers |
-| `/hooks` | View configured lifecycle hooks |
-
-### Productivity
-| Command | What it does |
-|---------|-------------|
-| `/spawn <task>` | Run a task in a background agent session |
-| `/editor` | Open `$EDITOR` to write a multi-line prompt |
-| `/paste` | Paste an image from clipboard |
-| `/copy` | Copy last response to clipboard |
-| `/code overview` | Get a high-level codebase structure |
-
-### Keyboard Shortcuts
-| Shortcut | Action |
-|----------|--------|
-| `Ctrl+G` | Crew monitor — see all active sessions |
-| `Ctrl+X` | Activity tray — task progress + message queue |
-| `Ctrl+R` | Search command history |
-| `Ctrl+O` | Toggle tool output visibility |
-| `Esc` | Dismiss overlay panels |
-
-> Full reference: `cheatsheets/kiro-commands.md`
-
----
-
-## Try It Yourself
-
-### 1. Spawn a parallel session
-```
-/spawn Research the best practices for error handling in Rust
-```
-Then press `Ctrl+G` to watch it run.
-
-### 2. Ask something that triggers subagents
-```
-Compare the pros and cons of PostgreSQL vs MySQL vs SQLite for a small web app
-```
-Kiro may use subagents to research each in parallel.
-
-### 3. Check your sessions
-Press `Ctrl+G` at any time to see the crew monitor showing all active sessions.
-
----
-
-## Files in This Demo
+The curriculum is organized into three tracks. Each builds on the previous one.
 
 ```
-kiro-concepts-demo/
-├── README.md                          ← You are here
-├── guides/
-│   └── agent-configuration.md         ← Agent config from zero to full (7 layers)
-├── diagrams/
-│   ├── dag-examples.md                ← Visual DAG patterns
-│   └── end-to-end-flow.md            ← Full flow: You → ACP → Agent → Subagents → You
-├── examples/
-│   ├── 01-parallel-research.json      ← Simple parallel pipeline
-│   ├── 02-sequential-pipeline.json    ← Research → Implement → Review
-│   └── 03-fan-out-fan-in.json         ← Complex dependency pattern
-├── hands-on/                          ← 🔥 PRACTICAL DEMO
-│   ├── WALKTHROUGH.md                 ← Step-by-step guide
-│   ├── mcp-server/
-│   │   └── server.py                 ← Your custom MCP tool (Python)
-│   └── agent/
-│       └── demo-agent.json           ← Agent config wired to custom tool
-└── cheatsheets/
-    ├── session-commands.md            ← Session management + slash commands reference
-    └── kiro-commands.md               ← Full Kiro slash commands deep-dive
+BASICS (Modules 1-4)          INTERMEDIATE (Modules 5-8)       ADVANCED
+Concepts and mental models     Hands-on building                Production deployment
+~2 hours                       ~3 hours                         ~2 hours
+
+[1] What is an Agent?     -->  [5] Protocols: ACP & JSON-RPC   --> AgentCore Deploy
+[2] Runtime vs Brain      -->  [6] Sessions & Memory               (AWS Bedrock)
+[3] Tools                 -->  [7] Multi-Agent: DAGs
+[4] How AI Decides        -->  [8] Build Your Own (Lab)
 ```
 
 ---
 
-## 6. Deploy an Agent to AWS — AgentCore
+### Basics — What Are AI Agents?
 
-`agentcore-deploy/` contains everything you need to go from zero to a live agent endpoint on AWS Bedrock AgentCore Runtime.
+Conceptual foundations. No coding required. Understand the architecture before building.
+
+| Module | Topic | Key Question | Duration |
+|--------|-------|-------------|----------|
+| 1 | [What is an AI Agent?](curriculum/module-01/README.md) | How is an agent different from a chatbot? | 30 min |
+| 2 | [The Runtime vs The Brain](curriculum/module-02/README.md) | What does the runtime do vs the model? | 30 min |
+| 3 | [Tools — Giving AI Hands](curriculum/module-03/README.md) | How does an agent interact with the real world? | 45 min |
+| 4 | [How AI Decides What To Do](curriculum/module-04/README.md) | How does the model pick which tool to call? | 30 min |
+
+After completing Basics, you will understand:
+- The three parts of any agent (brain, tools, memory)
+- Why the runtime and model are separate concerns
+- How tool descriptions drive the AI's decision-making
+- The Think-Act-Observe loop that powers all agents
+
+---
+
+### Intermediate — Build and Extend Agents
+
+Hands-on modules. You will write code, test tools, and build a custom agent.
+
+| Module | Topic | Key Question | Duration |
+|--------|-------|-------------|----------|
+| 5 | [Protocols: ACP & JSON-RPC](curriculum/module-05/README.md) | How do components talk to each other? | 45 min |
+| 6 | [Sessions & Memory](curriculum/module-06/README.md) | How does an agent remember things? | 30 min |
+| 7 | [Multi-Agent: DAGs & Subagents](curriculum/module-07/README.md) | How do multiple agents coordinate? | 45 min |
+| 8 | [Build Your Own — Hands-On Lab](curriculum/module-08/README.md) | Can I build all of this myself? | 60 min |
+
+After completing Intermediate, you will have:
+- Built a custom MCP tool server in Python
+- Created an agent configuration that uses your custom tools
+- Tested the full flow: you -> agent -> tool -> result
+- Understood how multi-agent DAG pipelines work
+
+---
+
+### Advanced — Multi-Agent Systems and Production Deployment
+
+Deploy a real agent to AWS using Amazon Bedrock AgentCore.
+
+| Topic | What You Build | Duration |
+|-------|---------------|----------|
+| [AgentCore Deployment Guide](agentcore-deploy/docs/DEPLOYMENT_GUIDE.md) | Live agent endpoint on AWS | 60-90 min |
+
+What the Advanced track covers:
+- Containerized agent deployment with AgentCore Runtime
+- Strands Agents SDK with custom tools (weather, calculator, time)
+- IAM roles, ECR image management, CloudWatch observability
+- Three invocation patterns: interactive CLI, batch/scheduled, event-driven
+- Production concerns: scaling, monitoring, cleanup
 
 ```
 agentcore-deploy/
-├── my_agent.py              ← Agent code (Strands Agents + 3 tools)
-├── requirements.txt         ← Python dependencies
+├── my_agent.py              -- Agent code (Strands Agents + 3 tools)
+├── requirements.txt         -- Python dependencies
 ├── scripts/
-│   ├── 01_configure.sh      ← One-time setup (venv + IAM role + ECR repo)
-│   ├── 02_launch_local.sh   ← Run + test locally in Docker
-│   └── 03_deploy_cloud.sh   ← Build image, push to ECR, create endpoint
+│   ├── 01_configure.sh      -- One-time setup (venv + IAM + ECR)
+│   ├── 02_launch_local.sh   -- Test locally in Docker
+│   └── 03_deploy_cloud.sh   -- Build, push, deploy to AWS
 ├── iam/
-│   └── execution-role-policy.json  ← IAM permissions for the execution role
+│   └── execution-role-policy.json
 └── docs/
-    └── DEPLOYMENT_GUIDE.md  ← Full step-by-step guide
+    └── DEPLOYMENT_GUIDE.md  -- Full step-by-step guide
 ```
 
-**The 3-command deploy flow:**
+The three-command deploy flow:
 ```bash
 ./scripts/01_configure.sh    # setup (run once)
 ./scripts/02_launch_local.sh # test locally
 ./scripts/03_deploy_cloud.sh # deploy to AWS
 ```
 
-Full guide: [`agentcore-deploy/docs/DEPLOYMENT_GUIDE.md`](agentcore-deploy/docs/DEPLOYMENT_GUIDE.md)
+---
+
+## Repository Structure
+
+```
+ai-agents/
+├── README.md                          -- You are here
+│
+├── curriculum/                        -- 8-module structured course
+│   ├── CURRICULUM.md                  -- Course overview and teaching guide
+│   ├── BRIDGE.md                      -- Transition from Intermediate to Advanced
+│   ├── TROUBLESHOOTING.md             -- Common problems and fixes
+│   ├── module-01/                     -- Basics: What is an Agent?
+│   ├── module-02/                     -- Basics: Runtime vs Brain
+│   ├── module-03/                     -- Basics: Tools
+│   ├── module-04/                     -- Basics: How AI Decides
+│   ├── module-05/                     -- Intermediate: Protocols
+│   ├── module-06/                     -- Intermediate: Sessions & Memory
+│   ├── module-07/                     -- Intermediate: Multi-Agent DAGs
+│   └── module-08/                     -- Intermediate: Hands-On Lab
+│
+├── hands-on/                          -- Working code for the lab
+│   ├── WALKTHROUGH.md                 -- Step-by-step build guide
+│   ├── mcp-server/server.py           -- Custom MCP tool server (Python)
+│   └── agent/demo-agent.json          -- Agent config wired to custom tools
+│
+├── agentcore-deploy/                  -- Advanced: AWS production deployment
+│   ├── my_agent.py                    -- Agent code (Strands Agents SDK)
+│   ├── requirements.txt
+│   ├── scripts/                       -- Automated setup, test, deploy
+│   ├── iam/                           -- IAM policy reference
+│   └── docs/DEPLOYMENT_GUIDE.md       -- Full deployment walkthrough
+│
+├── examples/                          -- Subagent pipeline configurations
+│   ├── 01-parallel-research.json      -- All stages run in parallel
+│   ├── 02-sequential-pipeline.json    -- Research -> Implement -> Review
+│   └── 03-fan-out-fan-in.json         -- Parallel work -> single summary
+│
+├── diagrams/                          -- Architecture and flow diagrams
+│   ├── dag-examples.md                -- Visual DAG patterns
+│   └── end-to-end-flow.md            -- Full request lifecycle
+│
+├── guides/                            -- Deep-dive reference guides
+│   └── agent-configuration.md         -- Agent config from zero to full
+│
+└── cheatsheets/                       -- Quick reference cards
+    ├── session-commands.md            -- Session management API reference
+    └── kiro-commands.md               -- Full Kiro CLI command reference
+```
 
 ---
 
-## Recommended Reading Order
+## Quick Start
 
-1. `guides/agent-configuration.md` — Understand what an agent IS
-2. `README.md` (sections 1-4) — Learn ACP, DAG, Subagent, Sessions
-3. `diagrams/end-to-end-flow.md` — See how everything connects
-4. `diagrams/dag-examples.md` — Visual DAG patterns
-5. `examples/` — Real pipeline configs
-6. `cheatsheets/session-commands.md` — Session management quick reference
-7. `cheatsheets/kiro-commands.md` — Full slash commands deep-dive
-8. **`hands-on/WALKTHROUGH.md`** — 🔥 Build a custom tool, wire it in, deploy to AWS
-9. **`agentcore-deploy/docs/DEPLOYMENT_GUIDE.md`** — 🚀 Deploy a real agent to AWS AgentCore
+### Option 1: Start with the concepts (recommended)
+
+Read [Module 1: What is an AI Agent?](curriculum/module-01/README.md) and work through the modules in order.
+
+### Option 2: Jump to hands-on
+
+If you already understand agent basics, go directly to [Module 8: Build Your Own](curriculum/module-08/README.md) or the [Hands-On Walkthrough](hands-on/WALKTHROUGH.md).
+
+### Option 3: Deploy to AWS
+
+If you want to deploy immediately, go to the [AgentCore Deployment Guide](agentcore-deploy/docs/DEPLOYMENT_GUIDE.md).
+
+### Option 4: Try things in Kiro right now
+
+```bash
+kiro-cli chat
+```
+
+Then try:
+```
+/spawn Research best practices for error handling in Python
+```
+Press `Ctrl+G` to watch the background session.
+
+---
+
+## Reference Materials
+
+| Resource | What it covers |
+|----------|---------------|
+| [Agent Configuration Guide](guides/agent-configuration.md) | Building agent configs layer by layer |
+| [DAG Examples](diagrams/dag-examples.md) | Visual patterns for multi-agent pipelines |
+| [End-to-End Flow](diagrams/end-to-end-flow.md) | Full request lifecycle from input to response |
+| [Session Commands Cheatsheet](cheatsheets/session-commands.md) | Session management API reference |
+| [Kiro Commands Reference](cheatsheets/kiro-commands.md) | Every slash command with examples |
+| [Pipeline Examples](examples/) | JSON configs for parallel, sequential, fan-out pipelines |
+| [Bridge: Intermediate to Advanced](curriculum/BRIDGE.md) | What changes when you go from local to production |
+| [Troubleshooting](curriculum/TROUBLESHOOTING.md) | Common problems and fixes across all modules |
+
+---
+
+## Teaching Formats
+
+This curriculum works for:
+
+| Format | Approach |
+|--------|----------|
+| 1-day workshop | All 8 modules + deployment demo, ~6 hours with breaks |
+| 4-week course | 2 modules per week, exercises as homework |
+| Self-paced | Read in order, do every exercise, Module 8 is the capstone |
+| Lunch and learn | Pick any single module as a standalone session |
+
+See [curriculum/CURRICULUM.md](curriculum/CURRICULUM.md) for instructor notes and teaching tips.
+
+---
+
+## Contributing
+
+Contributions welcome. If you find errors, want to add examples, or improve explanations:
+
+1. Fork the repository
+2. Create a branch for your changes
+3. Submit a pull request with a clear description
+
+Keep the style consistent: plain language, ASCII diagrams, exercises with collapsible answers, no emojis in technical content.

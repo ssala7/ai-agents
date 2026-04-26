@@ -58,6 +58,29 @@ This is NOT "checked" or "searched" — it IS the input. Every time the model ru
 - `/clear` — wipes everything, fresh start
 - `/context` — check how full it is
 
+---
+
+### Try This Now
+
+Run this in Kiro to see your context window usage:
+
+```
+/context
+```
+
+You will see a breakdown of how many tokens are used by: system prompt, tool definitions, conversation history, and resources. This is the "whiteboard" — everything the model sees on every turn.
+
+Now have a short conversation (ask 2-3 questions), then run `/context` again. Watch the numbers grow. That is your short-term memory filling up.
+
+If you want to see compaction in action, run:
+```
+/compact
+```
+
+Then `/context` again — the usage drops because old messages were summarized.
+
+---
+
 ## 6.3 What is a Session?
 
 A session = a running conversation with its full history.
@@ -243,7 +266,7 @@ kiro-cli settings chat.enableKnowledge true
 
 Then ask Kiro:
 ```
-Index the kiro-concepts-demo/curriculum folder
+Index the curriculum folder
 ```
 
 Start a NEW session (`/chat new`), then ask:
@@ -252,6 +275,16 @@ What does Module 3 cover?
 ```
 
 It should find the answer from the knowledge base — even though you never discussed Module 3 in this new session.
+
+---
+
+## Expected Outcomes
+
+After completing this module and its exercises, you should be able to:
+- Explain the difference between context (short-term) and knowledge (long-term)
+- Check context window usage with `/context` and free space with `/compact`
+- Index files into the knowledge base and search them in a new session
+- Describe how agent isolation works (each agent has its own knowledge base)
 
 ---
 
