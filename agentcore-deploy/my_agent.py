@@ -59,7 +59,7 @@ def get_current_time() -> str:
 app = BedrockAgentCoreApp()
 
 agent = Agent(
-    model="us.amazon.nova-lite-v1:0",   # swap for any Bedrock model ID
+    model="anthropic.claude-3-haiku-20240307-v1:0",   # cross-region inference profile
     system_prompt=SYSTEM_PROMPT,
     tools=[get_weather, calculate, get_current_time],
 )
