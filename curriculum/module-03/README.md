@@ -243,6 +243,70 @@ This config lets the agent read freely, but requires your approval for writes an
 
 Tools give agents power. Permissions, confirmation prompts, and hooks give you control. Always configure both.
 
+## 3.9 Skills and Powers — Packaging Knowledge
+
+Beyond individual tools, Kiro supports two higher-level packaging systems: **Skills** and **Powers**.
+
+### Skills — Portable instruction packages
+
+A skill is a folder with a `SKILL.md` file that bundles instructions, scripts, and templates into a reusable package. Skills follow the open [Agent Skills](https://agentskills.io) standard.
+
+```
+my-skill/
+├── SKILL.md           ← Required (name + description + instructions)
+├── scripts/           ← Optional executable code
+├── references/        ← Optional documentation
+└── assets/            ← Optional templates
+```
+
+Example `SKILL.md`:
+```markdown
+---
+name: pr-review
+description: Review pull requests for code quality, security issues, and test coverage.
+---
+
+## Review process
+1. Check for security vulnerabilities
+2. Verify error handling
+3. Confirm test coverage
+```
+
+**How skills activate:** Kiro loads only the name and description at startup. When your request matches a skill's description, Kiro loads the full instructions. This keeps context small until needed.
+
+**Scope:**
+- Workspace skills: `.kiro/skills/` — project-specific
+- Global skills: `~/.kiro/skills/` — available everywhere
+
+### Powers — Tools + knowledge bundled together
+
+A power bundles an MCP server (tools) with a `POWER.md` (guidance on when and how to use those tools). Powers activate dynamically based on keywords in your conversation.
+
+```
+Power = MCP tools + POWER.md steering + optional hooks
+```
+
+**The problem powers solve:** Connect 5 MCP servers and you load 100+ tool definitions upfront — eating 50K+ tokens before your first prompt. Powers load tools on-demand instead.
+
+**How powers activate:**
+1. You mention "payment" → Stripe power activates (loads Stripe MCP tools + guidance)
+2. You switch to database work → Supabase power activates, Stripe deactivates
+3. Only relevant tools are in context at any time
+
+### Skills vs Powers vs Tools
+
+| | Tools | Skills | Powers |
+|---|---|---|---|
+| What | Individual functions | Instruction packages | Tools + knowledge bundled |
+| Contains | Name + description + schema | SKILL.md + scripts | POWER.md + MCP server config |
+| Activation | Always loaded | On-demand (description match) | Dynamic (keyword match) |
+| Use case | Read files, run commands | Workflows (deploy, review) | Integrations (Stripe, Datadog) |
+
+**When to use what:**
+- Need a single function? → **Tool** (MCP server)
+- Need a reusable workflow with instructions? → **Skill**
+- Need tools + guidance that activate together? → **Power**
+
 ---
 
 ## Exercise 3.1: Match the Tool
