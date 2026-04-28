@@ -54,7 +54,7 @@ Modules 1-4 are conceptual. Modules 5-8 are progressively hands-on.
 |---|--------|-------------|-------|----------|
 | 1 | What is an AI Agent? | How is an agent different from a chatbot? | Basics | 30 min |
 | 2 | The Runtime vs The Brain | What does the runtime do vs the model? | Basics | 30 min |
-| 3 | Tools — Giving AI Hands | How does an agent interact with the real world? | Basics | 45 min |
+| 3 | Tools — Giving AI Hands | How does an agent interact with the real world? | Basics | 60 min |
 | 4 | How AI Decides What To Do | How does the model pick which tool to call? | Basics | 30 min |
 | 5 | Protocols — ACP & JSON-RPC | How do components talk to each other? | Intermediate | 45 min |
 | 6 | Sessions & Memory | How does an agent remember things? | Intermediate | 30 min |

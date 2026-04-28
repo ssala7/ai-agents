@@ -118,7 +118,7 @@ Conceptual foundations. No coding required. Understand the architecture before b
 |--------|-------|-------------|----------|
 | 1 | [What is an AI Agent?](curriculum/module-01/README.md) | How is an agent different from a chatbot? | 30 min |
 | 2 | [The Runtime vs The Brain](curriculum/module-02/README.md) | What does the runtime do vs the model? | 30 min |
-| 3 | [Tools — Giving AI Hands](curriculum/module-03/README.md) | How does an agent interact with the real world? | 45 min |
+| 3 | [Tools — Giving AI Hands](curriculum/module-03/README.md) | How does an agent interact with the real world? | 60 min |
 | 4 | [How AI Decides What To Do](curriculum/module-04/README.md) | How does the model pick which tool to call? | 30 min |
 
 After completing Basics, you will understand:

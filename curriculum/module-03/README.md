@@ -188,6 +188,100 @@ preToolUse hook:
 
 This is how you add safety rails without modifying the agent or model.
 
+---
+
+### Try This Now — Build and Test a Hook
+
+**Step 1: Create a logging hook**
+
+Create `hands-on/hooks/pre-tool-log.sh`:
+
+```bash
+#!/bin/bash
+# Logs every tool call to a file. Exit 0 = allow.
+LOG_FILE="/tmp/kiro-hook-log.txt"
+INPUT=$(cat)
+echo "[$(date '+%H:%M:%S')] RAW: $INPUT" >> "$LOG_FILE"
+TOOL_NAME=$(echo "$INPUT" | python3 -c "
+import sys, json
+d = json.load(sys.stdin)
+print(d.get('tool_name', 'unknown'))
+" 2>/dev/null)
+echo "[$(date '+%H:%M:%S')] Tool: $TOOL_NAME" >> "$LOG_FILE"
+exit 0
+```
+
+```bash
+chmod +x hands-on/hooks/pre-tool-log.sh
+```
+
+**Step 2: Create a blocking hook**
+
+Create `hands-on/hooks/block-rm.sh`:
+
+```bash
+#!/bin/bash
+# Blocks shell commands containing "rm". Exit 2 = block.
+INPUT=$(cat)
+COMMAND=$(echo "$INPUT" | python3 -c "
+import sys, json
+d = json.load(sys.stdin)
+print(d.get('tool_input', {}).get('command', ''))
+" 2>/dev/null)
+if echo "$COMMAND" | grep -q "rm "; then
+    echo "BLOCKED: refusing to run 'rm'" >&2
+    exit 2
+fi
+exit 0
+```
+
+```bash
+chmod +x hands-on/hooks/block-rm.sh
+```
+
+**Step 3: Add hooks to your agent config**
+
+In your agent JSON (`~/.kiro/agents/demo-agent.json`), add:
+
+```json
+"hooks": {
+  "preToolUse": [
+    { "command": "/full/path/to/hands-on/hooks/pre-tool-log.sh" },
+    { "matcher": "shell", "command": "/full/path/to/hands-on/hooks/block-rm.sh" }
+  ]
+}
+```
+
+**Step 4: Test**
+
+Reload the agent (`/agent kiro_default` then `/agent demo-agent`), then:
+
+```
+What files are in the current directory?
+```
+
+Check the log:
+```bash
+cat /tmp/kiro-hook-log.txt
+```
+
+You'll see the hook received JSON with `tool_name`, `tool_input`, `session_id`, and `cwd`.
+
+Now test the blocker:
+```
+Create a file /tmp/hook-test.txt with "hello", then delete it
+```
+
+The agent will create the file successfully, but when it tries `rm`, the hook blocks it (exit 2). The agent reports the failure and explains why.
+
+**What you learned:**
+- Hooks receive JSON via stdin: `{"hook_event_name": "preToolUse", "tool_name": "...", "tool_input": {...}}`
+- `exit 0` = allow the tool call
+- `exit 2` = block it (agent sees an error and adapts)
+- `matcher` limits which tools trigger the hook
+
+---
+
 ## 3.8 Safety and Guardrails
 
 Agents execute real commands on your system. A misconfigured agent can delete files, overwrite code, or run destructive commands. Safety is not optional — it's part of the design.
