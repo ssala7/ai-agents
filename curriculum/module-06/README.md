@@ -257,24 +257,76 @@ Compare before and after.
 
 ---
 
-## Exercise 6.3: Use the Knowledge Base
+## Exercise 6.3: Use the Knowledge Base (Hands-On)
+
+This exercise demonstrates the full knowledge base workflow: index → search → cross-session persistence.
+
+> **Note:** The knowledge base works with the default agent (`kiro_default`). Custom agents may not fully support knowledge indexing. Use `kiro_default` for this exercise.
+
+### Step 1: Enable the knowledge base
 
 ```bash
-# Enable it
 kiro-cli settings chat.enableKnowledge true
 ```
 
-Then ask Kiro:
+### Step 2: Switch to the default agent
+
 ```
-Index the curriculum folder
+/agent kiro_default
 ```
 
-Start a NEW session (`/chat new`), then ask:
+### Step 3: Index some content
+
+```
+/knowledge add curriculum ~/personal/ai-agents/curriculum
+```
+
+Wait for indexing to complete. Check what's indexed:
+```
+/knowledge show
+```
+
+You should see your indexed content listed with a name and file count.
+
+### Step 4: Search the knowledge base
+
+Just ask naturally — Kiro searches the knowledge base automatically:
+
 ```
 What does Module 3 cover?
 ```
 
-It should find the answer from the knowledge base — even though you never discussed Module 3 in this new session.
+It should answer from the indexed curriculum without needing to read the files directly.
+
+### Step 5: Test cross-session persistence
+
+Start a brand new session:
+```
+/chat new
+```
+
+Now ask:
+```
+What topics are covered in Module 4?
+```
+
+Kiro answers from the knowledge base — proving it persists across sessions.
+
+### Step 6: Manage your knowledge base
+
+```
+/knowledge show     — see what's indexed
+/knowledge remove   — remove indexed content
+/knowledge clear    — remove everything
+/knowledge update   — refresh existing content
+```
+
+### What you learned
+
+- Knowledge base is local, free, and persists across sessions
+- `/knowledge add` indexes files; searching happens automatically when you ask questions
+- The knowledge base works with `kiro_default`; custom agents may have limited support
+- Context = this session's conversation. Knowledge = indexed content available anytime.
 
 ---
 
