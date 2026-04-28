@@ -372,6 +372,82 @@ description: Review pull requests for code quality, security issues, and test co
 - Workspace skills: `.kiro/skills/` — project-specific
 - Global skills: `~/.kiro/skills/` — available everywhere
 
+### Try This Now — Create and Test a Skill
+
+**Step 1: Create the skill folder**
+
+```bash
+mkdir -p ~/.kiro/skills/code-review
+```
+
+**Step 2: Create `SKILL.md`**
+
+Create `~/.kiro/skills/code-review/SKILL.md`:
+
+```markdown
+---
+name: code-review
+description: Review code for bugs, security issues, and best practices. Use when reviewing code, checking for problems, or preparing a pull request.
+---
+
+## Code Review Checklist
+
+When reviewing code, follow this checklist in order:
+
+### 1. Security
+- Check for hardcoded secrets (API keys, passwords, tokens)
+- Look for SQL injection or command injection risks
+- Verify input validation on user-provided data
+
+### 2. Bugs
+- Look for off-by-one errors
+- Check null/undefined handling
+- Verify edge cases (empty arrays, zero values)
+
+### 3. Best Practices
+- Functions should do one thing
+- Variable names should be descriptive
+- No magic numbers — use named constants
+
+### 4. Output Format
+Present findings as:
+**Security:** [issues or "No issues"]
+**Bugs:** [issues or "No issues"]
+**Best Practices:** [suggestions or "Looks good"]
+```
+
+**Step 3: Test it in Kiro**
+
+Ask Kiro to do a code review (the keywords "code review" match the skill's description):
+
+```
+Code review this function:
+
+def login(username, password):
+    query = f"SELECT * FROM users WHERE name='{username}' AND pass='{password}'"
+    result = db.execute(query)
+    if result:
+        token = "sk-hardcoded-secret-123"
+        return {"token": token, "user": result[0]}
+    return None
+```
+
+The skill activates because "code review" matches the description. Kiro follows the checklist and uses the output format from your skill.
+
+**Step 4: Wire the skill into your agent config**
+
+If the skill doesn't activate automatically, add it as a resource in your agent JSON (`~/.kiro/agents/demo-agent.json`):
+
+```json
+"resources": [
+  "skill://~/.kiro/skills/code-review/SKILL.md"
+]
+```
+
+Reload the agent and try again. The `resources` field ensures the skill is available to the agent.
+
+**Key insight:** The `description` field is the activation trigger. If you say "code review this" — it activates. If you say "explain this code" — it won't, because that doesn't match.
+
 ### Powers — Tools + knowledge bundled together
 
 A power bundles an MCP server (tools) with a `POWER.md` (guidance on when and how to use those tools). Powers activate dynamically based on keywords in your conversation.
