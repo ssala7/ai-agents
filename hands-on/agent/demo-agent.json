@@ -6,14 +6,14 @@
   "allowedTools": ["read", "grep", "shell", "@demo-tools"],
   "hooks": {
     "preToolUse": [
-      { "command": "/Users/suresh.sala/personal/ai-agents/hands-on/hooks/pre-tool-log.sh" },
-      { "matcher": "shell", "command": "/Users/suresh.sala/personal/ai-agents/hands-on/hooks/block-rm.sh" }
+      { "command": "./hooks/pre-tool-log.sh" },
+      { "matcher": "shell", "command": "./hooks/block-rm.sh" }
     ]
   },
   "mcpServers": {
     "demo-tools": {
       "command": "python3",
-      "args": ["/Users/suresh.sala/personal/ai-agents/hands-on/mcp-server/server.py"]
+      "args": ["./mcp-server/server.py"]
     }
   },
   "welcomeMessage": "Demo agent ready! Hooks active: all tool calls logged, 'rm' commands blocked."
