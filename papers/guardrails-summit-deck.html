@@ -213,9 +213,17 @@
     display: none;
   }
 
+  @page { margin: 0; }
   @media print {
-    .slide { page-break-after: always; display: flex !important; height: 100vh; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    body { background: var(--bg) !important; margin: 0; }
+    .slide { page-break-after: always; page-break-inside: avoid; display: flex !important; height: 100vh; background: var(--bg) !important; overflow: hidden; padding: 40px 60px; }
     .slide-num, .branding { display: none; }
+    .card, .diagram, pre, .highlight-box, .layer, .takeaway-box, .risk-card { background: var(--card) !important; }
+    pre { background: var(--code-bg) !important; }
+    .three-col { gap: 16px; }
+    .diagram { padding: 20px; font-size: 0.75rem !important; }
+    .flow-step { margin: 8px 0; }
   }
 </style>
 </head>
@@ -223,7 +231,7 @@
 <!-- SLIDE 1: Title -->
 <div class="slide active">
   <div>
-    <h3 id="event-name">AWS Summit Bengaluru</h3>
+    <h3 id="event-name">Guardrails // Live</h3>
     <p style="font-size:1rem; color:var(--red); letter-spacing:3px; text-transform:uppercase; font-weight:700; margin-bottom:12px;">⚠️ VIEWER DISCRETION ADVISED</p>
     <h1 style="font-size:3.4rem;">The Agent Who Knew<br><span class="orange">Too Much</span></h1>
     <p class="subtitle" style="font-size:1.35rem; margin-top:16px; font-style:italic; color:var(--muted);">"It had root access. It had no guardrails. It had your production database."</p>
@@ -840,7 +848,7 @@ client.create_guardrail(
 
 <script>
 // ── CHANGE YOUR EVENT NAME HERE ──
-const EVENT_NAME = "AWS Summit Bengaluru";
+const EVENT_NAME = "Guardrails // Live";
 // ──────────────────────────────────
 
 let current = 0;
@@ -879,7 +887,7 @@ window.addEventListener('load', () => {
 </script>
 
 <div class="slide-num">1 / 13</div>
-<div class="branding">AWS Summit Bengaluru</div>
+<div class="branding">Guardrails // Live</div>
 
 </body>
 </html>

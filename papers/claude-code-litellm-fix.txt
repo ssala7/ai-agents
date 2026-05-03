@@ -1,0 +1,47 @@
+== FOR DEVELOPER CHANNEL ==
+
+🚨 *Claude Code CLI — 400 Error Fix*
+
+If you're seeing this error in your terminal:
+
+`API Error: 400 {"message":"context_management: Extra inputs are not permitted"}`
+
+Or in VS Code/Cursor — a red error banner saying "400 Bad Request" or "context_management: Extra inputs are not permitted"
+
+*What happened:* Claude Code CLI auto-updated and now sends parameters our internal proxy doesn't support yet.
+
+*Fix (30 seconds):*
+Add this to your ~/.zshrc (or ~/.bashrc):
+
+`export CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1`
+
+Then run `source ~/.zshrc` and restart your IDE if using VS Code/Cursor.
+
+Platform team is working on a proxy-side fix so this won't be needed long-term.
+
+
+== FOR PLATFORM/INFRA CHANNEL ==
+
+🔧 *LiteLLM Proxy — Breaking Change from Claude Code CLI*
+
+*Problem:*
+Claude Code CLI v2.1.25+ sends new beta params (context_management, etc.) in request body. Our LiteLLM proxy rejects them with strict Pydantic validation → 400 for all Claude Code users.
+
+This will keep recurring as Anthropic ships new beta features (~every 1-2 weeks).
+
+*Error users see:*
+• Terminal: `API Error: 400 context_management: Extra inputs are not permitted`
+• IDE: Red error banner — "400 Bad Request"
+
+*Recommended fix — add to LiteLLM proxy config:*
+
+litellm_settings:
+  drop_params: true
+
+This silently strips unknown params instead of rejecting. No impact on model behavior.
+
+*Temporary user workaround (already communicated to devs):*
+
+`export CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1`
+
+*Ask:* Can we apply drop_params: true globally so devs don't need to configure anything?
